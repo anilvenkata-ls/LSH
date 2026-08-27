@@ -1,0 +1,53 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "agingTable",
+  "position": {
+    "x": 24,
+    "y": 176,
+    "z": 2000,
+    "height": 320,
+    "width": 720,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": { "SourceRef": { "Entity": "Collections" } },
+                  "Property": "AgingBucket"
+                }
+              },
+              "queryRef": "Collections.AgingBucket",
+              "nativeQueryRef": "AgingBucket"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": { "SourceRef": { "Entity": "Collections" } },
+                  "Property": "Balance"
+                }
+              },
+              "queryRef": "Collections.Balance",
+              "nativeQueryRef": "Balance"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": { "expr": { "Literal": { "Value": "true" } } },
+            "text": { "expr": { "Literal": { "Value": "'AR Aging'" } } }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "reportId": "20c3819f-1d2d-44d0-b2a1-f19a14d9ffcf",
+  "workspaceId": "2f0dc0f6-8d38-4d3d-82fd-28e5710dfe85",
+  "workspaceUrl": "https://app.powerbi.com/groups/2f0dc0f6-8d38-4d3d-82fd-28e5710dfe85/reports/20c3819f-1d2d-44d0-b2a1-f19a14d9ffcf",
+  "ticket": "Patient Collections PBI - Visual Change Request",
+  "status": "blocked",
+  "blockers": [
+    "No PBIX or PBIP source is in this repository",
+    "Power BI REST/Fabric APIs rejected unauthenticated calls (403/401)",
+    "The ticket does not list the specific visual, label, sort, or slicer edits"
+  ]
+}
