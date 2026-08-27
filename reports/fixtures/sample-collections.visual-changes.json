@@ -1,0 +1,48 @@
+{
+  "ticket": "Sample Patient Collections visual enhancements",
+  "report": "reports/fixtures/sample-collections.Report",
+  "changes": [
+    {
+      "id": "kpi-title",
+      "description": "Rename the collections KPI title so it matches the report name",
+      "match": {
+        "pageDisplayName": "Overview",
+        "visualName": "collectionsKpi",
+        "visualType": "cardVisual"
+      },
+      "set": {
+        "title": "Patient Collections",
+        "titleShow": true,
+        "titleFontSize": 14,
+        "categoryLabel": "Collected Amount"
+      }
+    },
+    {
+      "id": "aging-sort",
+      "description": "Sort aging buckets by balance descending and keep the existing title",
+      "match": {
+        "pageDisplayName": "Overview",
+        "visualName": "agingTable"
+      },
+      "set": {
+        "title": "AR Aging",
+        "sort": {
+          "queryRef": "Collections.Balance",
+          "direction": "Descending"
+        }
+      }
+    },
+    {
+      "id": "region-slicer-tab",
+      "description": "Keep the region slicer first in keyboard order",
+      "match": {
+        "visualType": "slicer",
+        "title": "Region"
+      },
+      "set": {
+        "tabOrder": 100,
+        "title": "Region"
+      }
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "regionSlicer",
+  "position": {
+    "x": 768,
+    "y": 56,
+    "z": 3000,
+    "height": 96,
+    "width": 240,
+    "tabOrder": 3000
+  },
+  "visual": {
+    "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": { "SourceRef": { "Entity": "Collections" } },
+                  "Property": "Region"
+                }
+              },
+              "queryRef": "Collections.Region",
+              "nativeQueryRef": "Region"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": { "expr": { "Literal": { "Value": "true" } } },
+            "text": { "expr": { "Literal": { "Value": "'Region'" } } }
+          }
+        }
+      ]
+    }
+  }
+}

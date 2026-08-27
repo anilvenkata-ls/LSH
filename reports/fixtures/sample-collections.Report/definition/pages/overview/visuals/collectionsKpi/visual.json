@@ -1,0 +1,55 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "collectionsKpi",
+  "position": {
+    "x": 24,
+    "y": 56,
+    "z": 1000,
+    "height": 96,
+    "width": 280,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": { "SourceRef": { "Entity": "Collections" } },
+                  "Property": "CollectedAmount"
+                }
+              },
+              "queryRef": "Collections.CollectedAmount",
+              "nativeQueryRef": "CollectedAmount"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "label": [
+        {
+          "properties": {
+            "show": { "expr": { "Literal": { "Value": "true" } } },
+            "text": { "expr": { "Literal": { "Value": "'Collected $'" } } }
+          },
+          "selector": { "id": "default" }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": { "expr": { "Literal": { "Value": "true" } } },
+            "text": { "expr": { "Literal": { "Value": "'Collections'" } } },
+            "fontSize": { "expr": { "Literal": { "Value": "12D" } } }
+          }
+        }
+      ]
+    }
+  }
+}
