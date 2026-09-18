@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 from .catalog import LineageGraph, MetadataRepository
-from .context import RunOptions
+from .context import ChangeContext, RunOptions
 from .llm import default_client
 from .models import ImpactAction, TestStatus
 from .orchestrator import run_change_request
@@ -82,7 +82,7 @@ def _run(repo: MetadataRepository, args: argparse.Namespace) -> int:
     return EXIT_OK
 
 
-def _print_report(context) -> None:
+def _print_report(context: ChangeContext) -> None:
     request = context.request
     print("=" * 78)
     print("RCM CHANGE AUTOMATION PLATFORM")

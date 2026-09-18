@@ -29,7 +29,7 @@ class ImpactAnalysisAgent(Agent):
             context.halt(self.name, "Impact analysis requires a resolved request and column.")
             return "missing prerequisites"
 
-        repo, graph = context.repo, context.graph
+        graph = context.graph
         report_name = request.report
         source_table = metadata.column.physical_table
         column_name = metadata.column.physical_column

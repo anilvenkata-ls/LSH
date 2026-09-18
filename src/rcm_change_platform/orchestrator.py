@@ -35,7 +35,7 @@ class ChangePipeline:
                     break
             if context.halted and self.salvage:
                 for agent_class in SALVAGE_AGENTS:
-                    if agent_class in executed and agent_class is not FinalOutputAgent:
+                    if agent_class in executed:
                         continue
                     agent_class().run(context)
             if context.package:
