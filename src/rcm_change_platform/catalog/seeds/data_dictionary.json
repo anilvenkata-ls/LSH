@@ -1,0 +1,82 @@
+{
+  "terms": [
+    {
+      "business_term": "Patient Financial Class",
+      "synonyms": ["financial class", "fin class", "patient fin class", "financial classification", "pfc"],
+      "physical_table": "rcm.dim_patient",
+      "physical_column": "patient_financial_class",
+      "data_type": "VARCHAR(50)",
+      "definition": "Patient Financial Classification used to group accounts by the primary funding source (Commercial, Medicare, Medicaid, Self Pay, Workers Comp).",
+      "domain_values": ["Commercial", "Medicare", "Medicaid", "Self Pay", "Workers Comp"],
+      "steward": "Revenue Integrity",
+      "pii": false,
+      "certified": true
+    },
+    {
+      "business_term": "Payer Name",
+      "synonyms": ["insurance name", "payor name", "carrier"],
+      "physical_table": "rcm.dim_payer",
+      "physical_column": "payer_name",
+      "data_type": "VARCHAR(100)",
+      "definition": "Display name of the insurance payer responsible for the claim.",
+      "steward": "Payer Contracting",
+      "pii": false,
+      "certified": true
+    },
+    {
+      "business_term": "Payer Type",
+      "synonyms": ["payer category", "payor type"],
+      "physical_table": "rcm.dim_payer",
+      "physical_column": "payer_type",
+      "data_type": "VARCHAR(30)",
+      "definition": "Category of payer such as Commercial, Government or Self Pay.",
+      "steward": "Payer Contracting",
+      "pii": false,
+      "certified": true
+    },
+    {
+      "business_term": "Provider Specialty",
+      "synonyms": ["specialty", "rendering provider specialty", "physician specialty"],
+      "physical_table": "rcm.dim_provider",
+      "physical_column": "provider_specialty",
+      "data_type": "VARCHAR(60)",
+      "definition": "Primary clinical specialty of the rendering provider.",
+      "steward": "Provider Data Management",
+      "pii": false,
+      "certified": true
+    },
+    {
+      "business_term": "Patient State",
+      "synonyms": ["state", "patient residence state"],
+      "physical_table": "rcm.dim_patient",
+      "physical_column": "patient_state",
+      "data_type": "VARCHAR(2)",
+      "definition": "State of residence recorded on the patient record.",
+      "steward": "Patient Access",
+      "pii": true,
+      "certified": false
+    },
+    {
+      "business_term": "AR Balance",
+      "synonyms": ["balance", "outstanding balance", "accounts receivable balance"],
+      "physical_table": "rcm.fact_ar",
+      "physical_column": "balance",
+      "data_type": "NUMERIC(18,2)",
+      "definition": "Charges less payments less adjustments for an open claim.",
+      "steward": "Revenue Integrity",
+      "pii": false,
+      "certified": true
+    },
+    {
+      "business_term": "Denial Amount",
+      "synonyms": ["denied dollars", "denials"],
+      "physical_table": "rcm.fact_ar",
+      "physical_column": "denial_amount",
+      "data_type": "NUMERIC(18,2)",
+      "definition": "Dollar value of denied claim lines.",
+      "steward": "Denials Management",
+      "pii": false,
+      "certified": true
+    }
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "database": "rcm_warehouse",
+  "platform": "redshift",
+  "tables": [
+    {
+      "name": "staging.stg_ar_transactions",
+      "object_type": "table",
+      "layer": "staging",
+      "grain": "One row per AR transaction snapshot",
+      "business_keys": ["ar_source_key"],
+      "columns": [
+        {"name": "ar_source_key", "data_type": "INTEGER", "nullable": false, "description": "Source system surrogate key for the AR transaction"},
+        {"name": "claim_id", "data_type": "VARCHAR(30)", "nullable": false, "description": "Claim identifier from the billing system"},
+        {"name": "patient_id", "data_type": "VARCHAR(20)", "nullable": false, "description": "Patient natural key (MRN)"},
+        {"name": "payer_id", "data_type": "VARCHAR(20)", "nullable": false, "description": "Payer natural key"},
+        {"name": "provider_npi", "data_type": "VARCHAR(10)", "nullable": true, "description": "Rendering provider NPI"},
+        {"name": "service_date", "data_type": "DATE", "nullable": false, "description": "Date of service"},
+        {"name": "days_outstanding", "data_type": "INTEGER", "nullable": false, "description": "Days the balance has been outstanding"},
+        {"name": "charge_amount", "data_type": "NUMERIC(18,2)", "nullable": false, "description": "Gross charges"},
+        {"name": "payment_amount", "data_type": "NUMERIC(18,2)", "nullable": false, "description": "Payments posted"},
+        {"name": "adjustment_amount", "data_type": "NUMERIC(18,2)", "nullable": false, "description": "Contractual and other adjustments"},
+        {"name": "denial_amount", "data_type": "NUMERIC(18,2)", "nullable": false, "description": "Denied dollars"}
+      ]
+    },
+    {
+      "name": "rcm.dim_patient",
+      "object_type": "table",
+      "layer": "dimension",
+      "grain": "One row per patient",
+      "business_keys": ["patient_id"],
+      "columns": [
+        {"name": "patient_key", "data_type": "INTEGER", "nullable": false, "description": "Surrogate key for the patient"},
+        {"name": "patient_id", "data_type": "VARCHAR(20)", "nullable": false, "description": "Patient natural key (MRN)"},
+        {"name": "patient_name", "data_type": "VARCHAR(100)", "nullable": false, "description": "Patient display name"},
+        {"name": "patient_financial_class", "data_type": "VARCHAR(50)", "nullable": false, "description": "Patient Financial Classification (Commercial, Medicare, Medicaid, Self Pay, Workers Comp)"},
+        {"name": "primary_payer_id", "data_type": "VARCHAR(20)", "nullable": true, "description": "Primary payer natural key for the patient"},
+        {"name": "patient_state", "data_type": "VARCHAR(2)", "nullable": true, "description": "Patient state of residence"}
+      ]
+    },
+    {
+      "name": "rcm.dim_payer",
+      "object_type": "table",
+      "layer": "dimension",
+      "grain": "One row per payer",
+      "business_keys": ["payer_id"],
+      "columns": [
+        {"name": "payer_key", "data_type": "INTEGER", "nullable": false, "description": "Surrogate key for the payer"},
+        {"name": "payer_id", "data_type": "VARCHAR(20)", "nullable": false, "description": "Payer natural key"},
+        {"name": "payer_name", "data_type": "VARCHAR(100)", "nullable": false, "description": "Payer display name"},
+        {"name": "payer_type", "data_type": "VARCHAR(30)", "nullable": false, "description": "Payer category such as Commercial or Government"}
+      ]
+    },
+    {
+      "name": "rcm.dim_provider",
+      "object_type": "table",
+      "layer": "dimension",
+      "grain": "One row per rendering provider",
+      "business_keys": ["provider_npi"],
+      "columns": [
+        {"name": "provider_key", "data_type": "INTEGER", "nullable": false, "description": "Surrogate key for the provider"},
+        {"name": "provider_npi", "data_type": "VARCHAR(10)", "nullable": false, "description": "National Provider Identifier"},
+        {"name": "provider_name", "data_type": "VARCHAR(100)", "nullable": false, "description": "Provider display name"},
+        {"name": "provider_specialty", "data_type": "VARCHAR(60)", "nullable": true, "description": "Primary specialty of the rendering provider"}
+      ]
+    },
+    {
+      "name": "rcm.fact_ar",
+      "object_type": "table",
+      "layer": "fact",
+      "grain": "One row per claim AR balance snapshot",
+      "business_keys": ["claim_id"],
+      "loaded_by": "rcm.sp_load_ar_fact",
+      "columns": [
+        {"name": "ar_key", "data_type": "INTEGER", "nullable": false, "description": "Surrogate key for the AR fact row"},
+        {"name": "claim_id", "data_type": "VARCHAR(30)", "nullable": false, "description": "Claim identifier"},
+        {"name": "patient_key", "data_type": "INTEGER", "nullable": false, "description": "Foreign key to rcm.dim_patient"},
+        {"name": "payer_key", "data_type": "INTEGER", "nullable": false, "description": "Foreign key to rcm.dim_payer"},
+        {"name": "charge_amount", "data_type": "NUMERIC(18,2)", "nullable": false, "description": "Gross charges"},
+        {"name": "payment_amount", "data_type": "NUMERIC(18,2)", "nullable": false, "description": "Payments posted"},
+        {"name": "adjustment_amount", "data_type": "NUMERIC(18,2)", "nullable": false, "description": "Contractual and other adjustments"},
+        {"name": "denial_amount", "data_type": "NUMERIC(18,2)", "nullable": false, "description": "Denied dollars"},
+        {"name": "balance", "data_type": "NUMERIC(18,2)", "nullable": false, "description": "Outstanding AR balance"},
+        {"name": "aging_bucket", "data_type": "VARCHAR(20)", "nullable": false, "description": "AR aging bucket derived from days outstanding"},
+        {"name": "load_date", "data_type": "DATE", "nullable": false, "description": "ETL load date"}
+      ]
+    },
+    {
+      "name": "rcm.fact_denial",
+      "object_type": "table",
+      "layer": "fact",
+      "grain": "One row per denied claim line",
+      "business_keys": ["claim_id", "denial_code"],
+      "loaded_by": "rcm.sp_load_denial_fact",
+      "columns": [
+        {"name": "denial_key", "data_type": "INTEGER", "nullable": false, "description": "Surrogate key for the denial fact row"},
+        {"name": "claim_id", "data_type": "VARCHAR(30)", "nullable": false, "description": "Claim identifier"},
+        {"name": "payer_key", "data_type": "INTEGER", "nullable": false, "description": "Foreign key to rcm.dim_payer"},
+        {"name": "denial_code", "data_type": "VARCHAR(10)", "nullable": false, "description": "Payer denial reason code"},
+        {"name": "denial_amount", "data_type": "NUMERIC(18,2)", "nullable": false, "description": "Denied dollars"}
+      ]
+    }
+  ],
+  "relationships": [
+    {"from_table": "rcm.fact_ar", "from_column": "patient_key", "to_table": "rcm.dim_patient", "to_column": "patient_key", "cardinality": "many_to_one"},
+    {"from_table": "rcm.fact_ar", "from_column": "payer_key", "to_table": "rcm.dim_payer", "to_column": "payer_key", "cardinality": "many_to_one"},
+    {"from_table": "rcm.fact_denial", "from_column": "payer_key", "to_table": "rcm.dim_payer", "to_column": "payer_key", "cardinality": "many_to_one"},
+    {"from_table": "staging.stg_ar_transactions", "from_column": "patient_id", "to_table": "rcm.dim_patient", "to_column": "patient_id", "cardinality": "many_to_one"},
+    {"from_table": "staging.stg_ar_transactions", "from_column": "payer_id", "to_table": "rcm.dim_payer", "to_column": "payer_id", "cardinality": "many_to_one"},
+    {"from_table": "staging.stg_ar_transactions", "from_column": "provider_npi", "to_table": "rcm.dim_provider", "to_column": "provider_npi", "cardinality": "many_to_one"}
+  ],
+  "views": [
+    {
+      "name": "rcm.vw_ar_detail",
+      "object_type": "view",
+      "depends_on": ["rcm.fact_ar", "rcm.dim_patient", "rcm.dim_payer"],
+      "definition": "CREATE OR REPLACE VIEW rcm.vw_ar_detail AS\nSELECT\n    f.claim_id,\n    p.patient_id,\n    p.patient_name,\n    pay.payer_name,\n    f.charge_amount,\n    f.payment_amount,\n    f.adjustment_amount,\n    f.denial_amount,\n    f.balance,\n    f.aging_bucket\nFROM rcm.fact_ar f\nJOIN rcm.dim_patient p ON p.patient_key = f.patient_key\nJOIN rcm.dim_payer pay ON pay.payer_key = f.payer_key;"
+    },
+    {
+      "name": "rcm.vw_ar_aging_summary",
+      "object_type": "view",
+      "depends_on": ["rcm.fact_ar"],
+      "definition": "CREATE OR REPLACE VIEW rcm.vw_ar_aging_summary AS\nSELECT\n    f.aging_bucket,\n    COUNT(*) AS claim_count,\n    SUM(f.balance) AS total_balance\nFROM rcm.fact_ar f\nGROUP BY f.aging_bucket;"
+    },
+    {
+      "name": "rcm.vw_denial_detail",
+      "object_type": "view",
+      "depends_on": ["rcm.fact_denial", "rcm.dim_payer"],
+      "definition": "CREATE OR REPLACE VIEW rcm.vw_denial_detail AS\nSELECT\n    d.claim_id,\n    pay.payer_name,\n    d.denial_code,\n    d.denial_amount\nFROM rcm.fact_denial d\nJOIN rcm.dim_payer pay ON pay.payer_key = d.payer_key;"
+    }
+  ],
+  "routines": [
+    {
+      "name": "rcm.sp_load_ar_fact",
+      "object_type": "stored_procedure",
+      "reads": ["staging.stg_ar_transactions", "rcm.dim_patient", "rcm.dim_payer"],
+      "writes": ["rcm.fact_ar"],
+      "target_table": "rcm.fact_ar",
+      "body": "CREATE OR REPLACE PROCEDURE rcm.sp_load_ar_fact()\nAS $$\nBEGIN\n    DELETE FROM rcm.fact_ar;\n\n    INSERT INTO rcm.fact_ar (\n        ar_key,\n        claim_id,\n        patient_key,\n        payer_key,\n        charge_amount,\n        payment_amount,\n        adjustment_amount,\n        denial_amount,\n        balance,\n        aging_bucket,\n        load_date\n    )\n    SELECT\n        s.ar_source_key,\n        s.claim_id,\n        p.patient_key,\n        pay.payer_key,\n        s.charge_amount,\n        s.payment_amount,\n        s.adjustment_amount,\n        s.denial_amount,\n        s.charge_amount - s.payment_amount - s.adjustment_amount,\n        CASE\n            WHEN s.days_outstanding <= 30 THEN '0-30'\n            WHEN s.days_outstanding <= 60 THEN '31-60'\n            WHEN s.days_outstanding <= 90 THEN '61-90'\n            ELSE '90+'\n        END,\n        s.service_date\n    FROM staging.stg_ar_transactions s\n    JOIN rcm.dim_patient p ON p.patient_id = s.patient_id\n    JOIN rcm.dim_payer pay ON pay.payer_id = s.payer_id;\nEND;\n$$ LANGUAGE plpgsql;"
+    },
+    {
+      "name": "rcm.sp_load_denial_fact",
+      "object_type": "stored_procedure",
+      "reads": ["staging.stg_ar_transactions", "rcm.dim_payer"],
+      "writes": ["rcm.fact_denial"],
+      "target_table": "rcm.fact_denial",
+      "body": "CREATE OR REPLACE PROCEDURE rcm.sp_load_denial_fact()\nAS $$\nBEGIN\n    DELETE FROM rcm.fact_denial;\n\n    INSERT INTO rcm.fact_denial (\n        denial_key,\n        claim_id,\n        payer_key,\n        denial_code,\n        denial_amount\n    )\n    SELECT\n        s.ar_source_key,\n        s.claim_id,\n        pay.payer_key,\n        'CO-45',\n        s.denial_amount\n    FROM staging.stg_ar_transactions s\n    JOIN rcm.dim_payer pay ON pay.payer_id = s.payer_id\n    WHERE s.denial_amount > 0;\nEND;\n$$ LANGUAGE plpgsql;"
+    }
+  ]
+}

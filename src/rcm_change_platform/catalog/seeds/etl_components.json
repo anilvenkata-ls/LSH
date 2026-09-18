@@ -1,0 +1,50 @@
+{
+  "components": [
+    {
+      "name": "glue_ar_extract",
+      "object_type": "glue_job",
+      "description": "Extracts AR transactions from the billing system into staging.stg_ar_transactions.",
+      "reads": ["source.billing_ar_extract"],
+      "writes": ["staging.stg_ar_transactions"],
+      "repo_path": "etl/glue/glue_ar_extract.py",
+      "schedule": "Nightly 01:00 ET"
+    },
+    {
+      "name": "glue_patient_dim_load",
+      "object_type": "glue_job",
+      "description": "Loads the patient dimension including financial class attributes.",
+      "reads": ["source.patient_master"],
+      "writes": ["rcm.dim_patient"],
+      "repo_path": "etl/glue/glue_patient_dim_load.py",
+      "schedule": "Nightly 00:30 ET"
+    },
+    {
+      "name": "lambda_run_ar_load",
+      "object_type": "lambda_function",
+      "description": "Invokes rcm.sp_load_ar_fact after staging is refreshed.",
+      "calls": ["rcm.sp_load_ar_fact"],
+      "writes": ["rcm.fact_ar"],
+      "repo_path": "etl/lambda/run_ar_load.py"
+    },
+    {
+      "name": "lambda_refresh_powerbi_dataset",
+      "object_type": "lambda_function",
+      "description": "Triggers the Power BI dataset refresh for pb_ar_aging once the warehouse load completes.",
+      "calls": [],
+      "refreshes": ["pb_ar_aging"],
+      "repo_path": "etl/lambda/refresh_powerbi_dataset.py"
+    },
+    {
+      "name": "sfn_rcm_nightly",
+      "object_type": "step_function",
+      "description": "Nightly RCM orchestration: extract, dimension loads, fact loads, Power BI refresh.",
+      "orchestrates": [
+        "glue_patient_dim_load",
+        "glue_ar_extract",
+        "lambda_run_ar_load",
+        "lambda_refresh_powerbi_dataset"
+      ],
+      "repo_path": "etl/stepfunctions/sfn_rcm_nightly.asl.json"
+    }
+  ]
+}

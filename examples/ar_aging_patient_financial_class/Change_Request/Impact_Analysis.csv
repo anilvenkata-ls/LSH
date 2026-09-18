@@ -1,0 +1,12 @@
+Object,Type,Impact,Layer,Risk,Owner,Rationale
+rcm.dim_patient,table,No Change,dimension,low,,Provides the attribute. rcm.sp_load_ar_fact already joins rcm.dim_patient as 'p'.
+rcm.fact_ar,table,Modify,fact,medium,,Add column patient_financial_class (existing join).
+rcm.sp_load_ar_fact,stored_procedure,Modify,warehouse,medium,,Populate rcm.fact_ar.patient_financial_class in the INSERT and SELECT lists.
+rcm.vw_ar_detail,view,Modify,warehouse,low,,Expose patient_financial_class to the reporting layer.
+rcm.vw_ar_aging_summary,view,Review,warehouse,medium,,"Aggregate view: adding patient_financial_class would change the grain, so it needs a business decision rather than an automated edit."
+df_rcm_ar,dataflow,Refresh,reporting,low,,Reload the dataflow so the new column lands in the dataset.
+pb_ar_aging,dataset,Refresh,reporting,medium,RCM Analytics,Refresh the semantic model to pick up the new column.
+AR Aging Report,report,Modify,reporting,low,RCM Analytics Team,Surface the new column on the impacted visuals.
+lambda_run_ar_load,lambda_function,Review,etl,low,,lambda_run_ar_load invokes rcm.sp_load_ar_fact; confirm the orchestration still succeeds after the change.
+lambda_refresh_powerbi_dataset,lambda_function,Review,etl,low,,lambda_refresh_powerbi_dataset refreshes pb_ar_aging; confirm the orchestration still succeeds after the change.
+sfn_rcm_nightly,step_function,Review,etl,low,,sfn_rcm_nightly orchestrates lambda_run_ar_load; confirm the orchestration still succeeds after the change.

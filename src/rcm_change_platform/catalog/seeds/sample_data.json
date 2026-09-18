@@ -1,0 +1,38 @@
+{
+  "description": "Deterministic sample rows used by the warehouse sandbox to execute generated SQL and reconcile financial totals. Fact tables are intentionally empty because they are populated by the ETL stored procedures.",
+  "tables": {
+    "rcm.dim_patient": [
+      {"patient_key": 1, "patient_id": "MRN001", "patient_name": "Alvarez, Maria", "patient_financial_class": "Commercial", "primary_payer_id": "PAY01", "patient_state": "TX"},
+      {"patient_key": 2, "patient_id": "MRN002", "patient_name": "Brooks, Daniel", "patient_financial_class": "Medicare", "primary_payer_id": "PAY02", "patient_state": "TX"},
+      {"patient_key": 3, "patient_id": "MRN003", "patient_name": "Chen, Wei", "patient_financial_class": "Medicaid", "primary_payer_id": "PAY03", "patient_state": "OK"},
+      {"patient_key": 4, "patient_id": "MRN004", "patient_name": "Davis, Karen", "patient_financial_class": "Self Pay", "primary_payer_id": null, "patient_state": "TX"},
+      {"patient_key": 5, "patient_id": "MRN005", "patient_name": "Ellis, Robert", "patient_financial_class": "Commercial", "primary_payer_id": "PAY01", "patient_state": "AR"},
+      {"patient_key": 6, "patient_id": "MRN006", "patient_name": "Foster, Amy", "patient_financial_class": "Workers Comp", "primary_payer_id": "PAY02", "patient_state": "TX"}
+    ],
+    "rcm.dim_payer": [
+      {"payer_key": 10, "payer_id": "PAY01", "payer_name": "Blue Shield Regional", "payer_type": "Commercial"},
+      {"payer_key": 11, "payer_id": "PAY02", "payer_name": "Medicare Part A", "payer_type": "Government"},
+      {"payer_key": 12, "payer_id": "PAY03", "payer_name": "State Medicaid", "payer_type": "Government"},
+      {"payer_key": 13, "payer_id": "PAY04", "payer_name": "Self Pay", "payer_type": "Self Pay"}
+    ],
+    "rcm.dim_provider": [
+      {"provider_key": 20, "provider_npi": "1000000001", "provider_name": "Nguyen, Linh", "provider_specialty": "Cardiology"},
+      {"provider_key": 21, "provider_npi": "1000000002", "provider_name": "Patel, Arjun", "provider_specialty": "Orthopedics"},
+      {"provider_key": 22, "provider_npi": "1000000003", "provider_name": "Smith, Dana", "provider_specialty": "Family Medicine"}
+    ],
+    "staging.stg_ar_transactions": [
+      {"ar_source_key": 101, "claim_id": "CLM-0001", "patient_id": "MRN001", "payer_id": "PAY01", "provider_npi": "1000000001", "service_date": "2026-05-04", "days_outstanding": 18, "charge_amount": 1250.00, "payment_amount": 800.00, "adjustment_amount": 150.00, "denial_amount": 0.00},
+      {"ar_source_key": 102, "claim_id": "CLM-0002", "patient_id": "MRN002", "payer_id": "PAY02", "provider_npi": "1000000002", "service_date": "2026-04-11", "days_outstanding": 41, "charge_amount": 3400.00, "payment_amount": 2100.00, "adjustment_amount": 700.00, "denial_amount": 300.00},
+      {"ar_source_key": 103, "claim_id": "CLM-0003", "patient_id": "MRN003", "payer_id": "PAY03", "provider_npi": "1000000003", "service_date": "2026-03-02", "days_outstanding": 81, "charge_amount": 980.00, "payment_amount": 400.00, "adjustment_amount": 80.00, "denial_amount": 120.00},
+      {"ar_source_key": 104, "claim_id": "CLM-0004", "patient_id": "MRN004", "payer_id": "PAY04", "provider_npi": "1000000001", "service_date": "2026-01-19", "days_outstanding": 124, "charge_amount": 640.00, "payment_amount": 0.00, "adjustment_amount": 0.00, "denial_amount": 0.00},
+      {"ar_source_key": 105, "claim_id": "CLM-0005", "patient_id": "MRN005", "payer_id": "PAY01", "provider_npi": "1000000002", "service_date": "2026-05-22", "days_outstanding": 7, "charge_amount": 2210.50, "payment_amount": 1500.00, "adjustment_amount": 310.50, "denial_amount": 0.00},
+      {"ar_source_key": 106, "claim_id": "CLM-0006", "patient_id": "MRN006", "payer_id": "PAY02", "provider_npi": "1000000003", "service_date": "2026-02-27", "days_outstanding": 96, "charge_amount": 5400.00, "payment_amount": 3200.00, "adjustment_amount": 900.00, "denial_amount": 450.00},
+      {"ar_source_key": 107, "claim_id": "CLM-0007", "patient_id": "MRN001", "payer_id": "PAY01", "provider_npi": "1000000001", "service_date": "2026-05-30", "days_outstanding": 3, "charge_amount": 175.25, "payment_amount": 0.00, "adjustment_amount": 25.25, "denial_amount": 0.00},
+      {"ar_source_key": 108, "claim_id": "CLM-0008", "patient_id": "MRN002", "payer_id": "PAY02", "provider_npi": "1000000002", "service_date": "2026-04-28", "days_outstanding": 34, "charge_amount": 8900.00, "payment_amount": 6100.00, "adjustment_amount": 1400.00, "denial_amount": 750.00},
+      {"ar_source_key": 109, "claim_id": "CLM-0009", "patient_id": "MRN003", "payer_id": "PAY03", "provider_npi": "1000000003", "service_date": "2026-03-30", "days_outstanding": 63, "charge_amount": 1120.00, "payment_amount": 600.00, "adjustment_amount": 120.00, "denial_amount": 0.00},
+      {"ar_source_key": 110, "claim_id": "CLM-0010", "patient_id": "MRN005", "payer_id": "PAY01", "provider_npi": "1000000001", "service_date": "2026-05-12", "days_outstanding": 24, "charge_amount": 450.00, "payment_amount": 300.00, "adjustment_amount": 50.00, "denial_amount": 0.00},
+      {"ar_source_key": 111, "claim_id": "CLM-0011", "patient_id": "MRN004", "payer_id": "PAY04", "provider_npi": "1000000002", "service_date": "2026-02-08", "days_outstanding": 112, "charge_amount": 275.00, "payment_amount": 75.00, "adjustment_amount": 0.00, "denial_amount": 0.00},
+      {"ar_source_key": 112, "claim_id": "CLM-0012", "patient_id": "MRN006", "payer_id": "PAY02", "provider_npi": "1000000003", "service_date": "2026-04-02", "days_outstanding": 58, "charge_amount": 3120.75, "payment_amount": 2000.00, "adjustment_amount": 620.75, "denial_amount": 200.00}
+    ]
+  }
+}
