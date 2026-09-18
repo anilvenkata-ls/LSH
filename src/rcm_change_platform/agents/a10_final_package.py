@@ -22,6 +22,31 @@ from .base import Agent
 PACKAGE_DIRNAME = "Change_Request"
 
 
+def write_run_manifest(context: ChangeContext, root: Path) -> str:
+    """Write the machine readable record of the run.
+
+    Called again by the orchestrator once the pipeline finishes so the manifest
+    also contains the report of the packaging agent itself.
+    """
+
+    manifest = {
+        "request": context.request.to_dict() if context.request else None,
+        "metadata": context.metadata.to_dict() if context.metadata else None,
+        "impact": context.impact.to_dict() if context.impact else None,
+        "change_set": context.change_set.to_dict() if context.change_set else None,
+        "unit_tests": context.unit_run.to_dict() if context.unit_run else None,
+        "integration_tests": context.integration_run.to_dict() if context.integration_run else None,
+        "reconciliation": context.reconciliation.to_dict() if context.reconciliation else None,
+        "power_bi": context.power_bi.to_dict() if context.power_bi else None,
+        "checklist": context.checklist.to_dict() if context.checklist else None,
+        "agents": [report.to_dict() for report in context.reports],
+        "warnings": context.warnings,
+    }
+    path = root / "Run_Manifest.json"
+    path.write_text(json.dumps(manifest, indent=2, default=str) + "\n", encoding="utf-8")
+    return path.name
+
+
 class FinalOutputAgent(Agent):
     name = "final_output"
     step = 10
@@ -53,7 +78,7 @@ class FinalOutputAgent(Agent):
         written.append(self._write_impact_workbook(context, root))
         written.append(self._write_impact_csv(context, root))
         written.append(self._write_validation_pdf(context, root))
-        written.append(self._write_manifest(context, root))
+        written.append(write_run_manifest(context, root))
 
         package = ChangePackage(root=str(root), files=sorted(written))
         context.package = package
@@ -160,24 +185,6 @@ class FinalOutputAgent(Agent):
         markdown = context.documents.get("Validation_Report.md", "")
         write_pdf(root / "Validation_Report.pdf", markdown_to_blocks(markdown))
         return "Validation_Report.pdf"
-
-    def _write_manifest(self, context: ChangeContext, root: Path) -> str:
-        manifest = {
-            "request": context.request.to_dict() if context.request else None,
-            "metadata": context.metadata.to_dict() if context.metadata else None,
-            "impact": context.impact.to_dict() if context.impact else None,
-            "change_set": context.change_set.to_dict() if context.change_set else None,
-            "unit_tests": context.unit_run.to_dict() if context.unit_run else None,
-            "integration_tests": context.integration_run.to_dict() if context.integration_run else None,
-            "reconciliation": context.reconciliation.to_dict() if context.reconciliation else None,
-            "power_bi": context.power_bi.to_dict() if context.power_bi else None,
-            "checklist": context.checklist.to_dict() if context.checklist else None,
-            "agents": [report.to_dict() for report in context.reports],
-            "warnings": context.warnings,
-        }
-        path = root / "Run_Manifest.json"
-        path.write_text(json.dumps(manifest, indent=2, default=str) + "\n", encoding="utf-8")
-        return path.name
 
     # -- markdown helpers ---------------------------------------------------
     @staticmethod

@@ -9,7 +9,10 @@ instead of a silent failure.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from .agents import PIPELINE, Agent, DocumentationAgent, FinalOutputAgent
+from .agents.a10_final_package import write_run_manifest
 from .catalog import MetadataRepository
 from .context import ChangeContext, RunOptions
 from .llm import LLMClient, default_client
@@ -35,6 +38,8 @@ class ChangePipeline:
                     if agent_class in executed and agent_class is not FinalOutputAgent:
                         continue
                     agent_class().run(context)
+            if context.package:
+                write_run_manifest(context, Path(context.package.root))
         finally:
             context.release_resources()
         return context

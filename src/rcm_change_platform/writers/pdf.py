@@ -121,21 +121,73 @@ def markdown_to_blocks(markdown: str) -> list[tuple[str, str]]:
 
     blocks: list[tuple[str, str]] = []
     in_code = False
+    table: list[str] = []
+
+    def flush_table() -> None:
+        if table:
+            blocks.extend(("mono", line) for line in _format_table(table))
+            table.clear()
+
     for line in markdown.splitlines():
         stripped = line.strip()
         if stripped.startswith("```"):
+            flush_table()
             in_code = not in_code
             continue
         if in_code:
             blocks.append(("mono", line))
-        elif stripped.startswith("# "):
+            continue
+        if stripped.startswith("|"):
+            table.append(stripped)
+            continue
+        flush_table()
+        if stripped.startswith("# "):
             blocks.append(("title", stripped[2:]))
         elif stripped.startswith("## "):
             blocks.append(("h1", stripped[3:]))
         elif stripped.startswith("### "):
             blocks.append(("h2", stripped[4:]))
-        elif stripped.startswith("|"):
-            blocks.append(("mono", stripped))
         else:
             blocks.append(("body", stripped.replace("**", "").replace("`", "")))
+    flush_table()
     return blocks
+
+
+def _format_table(rows: Sequence[str]) -> list[str]:
+    """Render a markdown table as aligned monospaced text."""
+
+    parsed = [
+        [cell.strip().replace("**", "").replace("`", "") for cell in row.strip().strip("|").split("|")]
+        for row in rows
+        if set(row.replace("|", "").replace("-", "").replace(":", "").strip()) != set()
+        or row.strip("|- :") != ""
+    ]
+    parsed = [cells for cells in parsed if not all(set(cell) <= {"-", ":", " "} for cell in cells)]
+    if not parsed:
+        return []
+    width = max(len(cells) for cells in parsed)
+    parsed = [cells + [""] * (width - len(cells)) for cells in parsed]
+    widths = _allocate_widths([max(len(cells[i]) for cells in parsed) for i in range(width)])
+    lines = []
+    for index, cells in enumerate(parsed):
+        rendered = "   ".join(
+            (cell if len(cell) <= widths[i] else cell[: max(1, widths[i] - 1)] + "~").ljust(widths[i])
+            for i, cell in enumerate(cells)
+        )
+        lines.append(rendered.rstrip())
+        if index == 0:
+            lines.append("   ".join("-" * w for w in widths))
+    return lines
+
+
+def _allocate_widths(natural: list[int], minimum: int = 6) -> list[int]:
+    """Shrink the widest columns first until the row fits the page."""
+
+    budget = _STYLES["mono"][3] - 3 * (len(natural) - 1)
+    widths = list(natural)
+    while sum(widths) > budget:
+        widest = max(range(len(widths)), key=lambda i: widths[i])
+        if widths[widest] <= minimum:
+            break
+        widths[widest] -= 1
+    return widths
