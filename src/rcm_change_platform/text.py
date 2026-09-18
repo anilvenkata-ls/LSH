@@ -83,9 +83,5 @@ def best_match(
     return None, (scored[0][1] if scored else 0.0), scored
 
 
-def snake_case(value: str) -> str:
-    return "_".join(tokens(value))
-
-
 def title_case(value: str) -> str:
     return " ".join(word.capitalize() for word in tokens(value))

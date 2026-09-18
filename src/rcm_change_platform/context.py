@@ -32,7 +32,6 @@ class RunOptions:
     business_reason: str = ""
     request_id: str = ""
     release: str = ""
-    strict: bool = False
 
     def resolved_output(self) -> Path:
         return Path(self.output_dir)

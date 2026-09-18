@@ -1,0 +1,164 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [6 0 R 8 0 R] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Name /F1 >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Name /F2 >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier /Name /F3 >>
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 6246 >>
+stream
+BT
+/F2 18 Tf
+1 0 0 1 54 716 Tm (Validation Report - RCM-1610) Tj
+/F1 10 Tf
+1 0 0 1 54 703 Tm () Tj
+1 0 0 1 54 690 Tm (Generated: 2026-09-18 19:21 UTC) Tj
+1 0 0 1 54 677 Tm (Execution mode: sandbox executed) Tj
+1 0 0 1 54 664 Tm () Tj
+/F2 14 Tf
+1 0 0 1 54 646 Tm (Financial Reconciliation) Tj
+/F1 10 Tf
+1 0 0 1 54 633 Tm () Tj
+/F3 8 Tf
+1 0 0 1 54 623 Tm (Metric                                       Before      After       Delta   Result) Tj
+1 0 0 1 54 613 Tm (------------------------------------------   ---------   ---------   -----   ------) Tj
+1 0 0 1 54 603 Tm (rcm.fact_ar row count                        12.00       12.00       0.00    PASS) Tj
+1 0 0 1 54 593 Tm (rcm.fact_ar SUM\(charge_amount\)               27,921.50   27,921.50   0.00    PASS) Tj
+1 0 0 1 54 583 Tm (rcm.fact_ar SUM\(payment_amount\)              17,075.00   17,075.00   0.00    PASS) Tj
+1 0 0 1 54 573 Tm (rcm.fact_ar SUM\(adjustment_amount\)           4,356.50    4,356.50    0.00    PASS) Tj
+1 0 0 1 54 563 Tm (rcm.fact_ar SUM\(denial_amount\)               1,820.00    1,820.00    0.00    PASS) Tj
+1 0 0 1 54 553 Tm (rcm.fact_ar SUM\(balance\)                     6,490.00    6,490.00    0.00    PASS) Tj
+1 0 0 1 54 543 Tm (rcm.fact_ar DISTINCT\(claim_id\)               12.00       12.00       0.00    PASS) Tj
+1 0 0 1 54 533 Tm (rcm.vw_ar_detail row count                   12.00       12.00       0.00    PASS) Tj
+1 0 0 1 54 523 Tm (rcm.vw_ar_detail SUM\(balance\)                6,490.00    6,490.00    0.00    PASS) Tj
+1 0 0 1 54 513 Tm (rcm.vw_ar_aging_summary row count            4.00        4.00        0.00    PASS) Tj
+1 0 0 1 54 503 Tm (rcm.vw_ar_aging_summary SUM\(total_balance\)   6,490.00    6,490.00    0.00    PASS) Tj
+/F1 10 Tf
+1 0 0 1 54 490 Tm () Tj
+/F2 14 Tf
+1 0 0 1 54 472 Tm (Unit Tests) Tj
+/F1 10 Tf
+1 0 0 1 54 459 Tm () Tj
+/F3 8 Tf
+1 0 0 1 54 449 Tm (Test                         Category                      Status   Expectation                               Observed) Tj
+1 0 0 1 54 439 Tm (--------------------------   ---------------------------   ------   ---------------------------------------   --------) Tj
+1 0 0 1 54 429 Tm (column_population            Column Population             passed   at least one populated row                12) Tj
+1 0 0 1 54 419 Tm (null_validation              Null Validation               passed   0 records                                 0) Tj
+1 0 0 1 54 409 Tm (row_count_validation         Row Count Validation          passed   matches the source row count from stag~   12 vs 12) Tj
+1 0 0 1 54 399 Tm (duplicate_validation         Duplicate Validation          passed   0 records                                 0) Tj
+1 0 0 1 54 389 Tm (datatype_validation          Data Type Validation          passed   0 records exceeding VARCHAR\(50\)           0) Tj
+1 0 0 1 54 379 Tm (domain_validation            Domain Validation             passed   0 records outside the certified domain    0) Tj
+1 0 0 1 54 369 Tm (source_to_target_parity      Source to Target Validation   passed   0 records where the fact value differs~   0) Tj
+1 0 0 1 54 359 Tm (view_exposure_vw_ar_detail   Reporting Layer Exposure      passed   view compiles and exposes the new colu~   12) Tj
+/F1 10 Tf
+1 0 0 1 54 346 Tm () Tj
+/F2 14 Tf
+1 0 0 1 54 328 Tm (Integration Tests) Tj
+/F1 10 Tf
+1 0 0 1 54 315 Tm () Tj
+/F3 8 Tf
+1 0 0 1 54 305 Tm (Test                        Category                   Status   Expectation                 Observed) Tj
+1 0 0 1 54 295 Tm (-------------------------   ------------------------   ------   -------------------------   --------------------------) Tj
+1 0 0 1 54 285 Tm (reconciliation::rcm.fact~   Financial Reconciliation   passed   unchanged before and aft~   before=12.00 after=12.00 ~) Tj
+1 0 0 1 54 275 Tm (reconciliation::rcm.fact~   Financial Reconciliation   passed   unchanged before and aft~   before=27,921.50 after=27~) Tj
+1 0 0 1 54 265 Tm (reconciliation::rcm.fact~   Financial Reconciliation   passed   unchanged before and aft~   before=17,075.00 after=17~) Tj
+1 0 0 1 54 255 Tm (reconciliation::rcm.fact~   Financial Reconciliation   passed   unchanged before and aft~   before=4,356.50 after=4,3~) Tj
+1 0 0 1 54 245 Tm (reconciliation::rcm.fact~   Financial Reconciliation   passed   unchanged before and aft~   before=1,820.00 after=1,8~) Tj
+1 0 0 1 54 235 Tm (reconciliation::rcm.fact~   Financial Reconciliation   passed   unchanged before and aft~   before=6,490.00 after=6,4~) Tj
+1 0 0 1 54 225 Tm (reconciliation::rcm.fact~   Financial Reconciliation   passed   unchanged before and aft~   before=12.00 after=12.00 ~) Tj
+1 0 0 1 54 215 Tm (reconciliation::rcm.vw_a~   Financial Reconciliation   passed   unchanged before and aft~   before=12.00 after=12.00 ~) Tj
+1 0 0 1 54 205 Tm (reconciliation::rcm.vw_a~   Financial Reconciliation   passed   unchanged before and aft~   before=6,490.00 after=6,4~) Tj
+1 0 0 1 54 195 Tm (reconciliation::rcm.vw_a~   Financial Reconciliation   passed   unchanged before and aft~   before=4.00 after=4.00 de~) Tj
+1 0 0 1 54 185 Tm (reconciliation::rcm.vw_a~   Financial Reconciliation   passed   unchanged before and aft~   before=6,490.00 after=6,4~) Tj
+1 0 0 1 54 175 Tm (parity::rcm.vw_ar_detail~   Reporting Parity           passed   equals COALESCE\(SUM\(bala~   6490 vs 6490) Tj
+1 0 0 1 54 165 Tm (parity::rcm.vw_ar_detail~   Reporting Parity           passed   equals the row count of ~   12 vs 12) Tj
+1 0 0 1 54 155 Tm (parity::rcm.vw_ar_aging_~   Reporting Parity           passed   equals COALESCE\(SUM\(bala~   6490 vs 6490) Tj
+/F1 10 Tf
+1 0 0 1 54 142 Tm () Tj
+/F2 14 Tf
+1 0 0 1 54 124 Tm (Deployment Readiness) Tj
+/F1 10 Tf
+1 0 0 1 54 111 Tm () Tj
+/F3 8 Tf
+1 0 0 1 54 101 Tm (Section         Item                                      Status        Detail) Tj
+1 0 0 1 54 91 Tm (-------------   ---------------------------------------   -----------   ----------------------------------------------) Tj
+1 0 0 1 54 81 Tm (Development     Migration script generated                complete) Tj
+1 0 0 1 54 71 Tm (Development     Stored procedure updated                  complete      rcm.sp_load_ar_fact) Tj
+1 0 0 1 54 61 Tm (Development     View updated                              complete      rcm.vw_ar_detail) Tj
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 3116 >>
+stream
+BT
+/F3 8 Tf
+1 0 0 1 54 728 Tm (Development     Rollback script generated                 complete) Tj
+1 0 0 1 54 718 Tm (Testing         Unit tests generated                      complete      8 cases) Tj
+1 0 0 1 54 708 Tm (Testing         Unit tests passed                         complete      8 checks) Tj
+1 0 0 1 54 698 Tm (Testing         Integration tests passed                  complete      14 checks) Tj
+1 0 0 1 54 688 Tm (Testing         Financial reconciliation passed           complete      11 metrics compared) Tj
+1 0 0 1 54 678 Tm (Reporting       Power BI change plan generated            complete      14 actions) Tj
+1 0 0 1 54 668 Tm (Reporting       Semantic model refresh scheduled          complete      dataset pb_ar_aging) Tj
+1 0 0 1 54 658 Tm (Reporting       Report visuals reviewed by a human        outstanding   manual step: place the new field on the inten~) Tj
+1 0 0 1 54 648 Tm (Documentation   Technical design                          complete      5091 characters) Tj
+1 0 0 1 54 638 Tm (Documentation   PR description                            complete      1009 characters) Tj
+1 0 0 1 54 628 Tm (Documentation   Release notes                             complete      1015 characters) Tj
+1 0 0 1 54 618 Tm (Governance      Column certified in the data dictionary   complete      Revenue Integrity) Tj
+1 0 0 1 54 608 Tm (Governance      PII review                                complete      no PII involved) Tj
+/F1 10 Tf
+1 0 0 1 54 595 Tm () Tj
+1 0 0 1 54 582 Tm (Verdict: READY FOR DEPLOYMENT) Tj
+1 0 0 1 54 569 Tm () Tj
+/F2 14 Tf
+1 0 0 1 54 551 Tm (Agent Run Log) Tj
+/F1 10 Tf
+1 0 0 1 54 538 Tm () Tj
+/F3 8 Tf
+1 0 0 1 54 528 Tm (Step   Agent                   Status      Duration \(ms\)   Summary) Tj
+1 0 0 1 54 518 Tm (----   ---------------------   ---------   -------------   -----------------------------------------------------------) Tj
+1 0 0 1 54 508 Tm (1      request_intake          completed   0.4             parsed 'Patient Financial Class' for report 'AR Aging Repo~) Tj
+1 0 0 1 54 498 Tm (2      metadata_discovery      completed   0.7             resolved to rcm.dim_patient.patient_financial_class VARCHA~) Tj
+1 0 0 1 54 488 Tm (3      impact_analysis         completed   0.5             11 impacted objects, 4 require code changes: rcm.fact_ar, ~) Tj
+1 0 0 1 54 478 Tm (4      sql_change_generation   completed   0.9             generated migration for rcm.fact_ar.patient_financial_clas~) Tj
+1 0 0 1 54 468 Tm (5      documentation           completed   0.1             drafted 5 documents: Requirement.md, Technical_Design.md, ~) Tj
+1 0 0 1 54 458 Tm (6      unit_test_generation    completed   2.7             8/8 unit tests passed) Tj
+1 0 0 1 54 448 Tm (7      integration_testing     completed   3.1             14/14 integration checks passed; reconciliation balanced) Tj
+1 0 0 1 54 438 Tm (8      power_bi_impact         completed   0.1             14 Power BI actions for dataset 'pb_ar_aging': 6 measures,~) Tj
+1 0 0 1 54 428 Tm (9      deployment_readiness    completed   0.1             15/16 checklist items complete; ready for deployment) Tj
+ET
+endstream
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000121 00000 n 
+0000000201 00000 n 
+0000000286 00000 n 
+0000000364 00000 n 
+0000000510 00000 n 
+0000006808 00000 n 
+0000006954 00000 n 
+trailer
+<< /Size 10 /Root 1 0 R >>
+startxref
+10122
+%%EOF

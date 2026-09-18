@@ -103,11 +103,6 @@ def test_strip_comments_and_is_executable():
     assert not sqlkit.is_executable("-- only a comment")
 
 
-def test_references_table_ignores_partial_matches():
-    assert sqlkit.references_table(VIEW, "rcm.fact_ar")
-    assert not sqlkit.references_table(VIEW, "fact_ar_history")
-
-
 def test_unified_diff_reports_the_added_line():
     updated = sqlkit.add_projection_column(VIEW, "f.new_column")
     diff = sqlkit.unified_diff(VIEW, updated, "vw_demo.sql")

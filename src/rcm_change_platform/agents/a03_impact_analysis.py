@@ -8,6 +8,7 @@ needs, i.e. how the attribute reaches the fact table that feeds the report.
 
 from __future__ import annotations
 
+from collections import deque
 from typing import Any
 
 from ..catalog.lineage import CONTROL, DATA
@@ -249,14 +250,18 @@ class ImpactAnalysisAgent(Agent):
         self._add(context, matrix, report, ImpactAction.MODIFY, "Surface the new column on the impacted visuals.")
 
     def _add_etl_items(self, context: ChangeContext, matrix: ImpactMatrix, loader_name: str, fact_table: str, on_path: list[str]) -> None:
+        """Follow control edges so callers and their orchestrators are both listed."""
+
         seen = set(matrix.names())
-        control_targets = [loader_name, fact_table, *on_path]
-        for target in control_targets:
+        queue = deque([loader_name, fact_table, *on_path])
+        while queue:
+            target = queue.popleft()
             for edge in context.graph.outgoing(target, kinds=(CONTROL,)):
                 component = edge.target
                 if component in seen:
                     continue
                 seen.add(component)
+                queue.append(component)
                 self._add(
                     context,
                     matrix,
@@ -279,8 +284,14 @@ class ImpactAnalysisAgent(Agent):
             )
 
     def _propagation_path(self, context: ChangeContext, source_table: str, report: str, fact_table: str, loader: str) -> list[str]:
-        path = context.graph.shortest_path(source_table, report)
-        if path:
-            return path
+        """The route the new value travels, which is not always the shortest one.
+
+        A dimension often reaches a report twice: directly, because a reporting
+        view joins it, and through the fact load. The change follows the second
+        route, so the path is anchored on the loader and the fact table.
+        """
+
         downstream = context.graph.shortest_path(fact_table, report)
+        if source_table == fact_table:
+            return downstream
         return [source_table, loader, *downstream]

@@ -74,7 +74,6 @@ class ChangeRequest(Serializable):
     business_reason: str = ""
     change_type: ChangeType = ChangeType.ADD_COLUMN
     requested_by: str = "business_user"
-    priority: str = "normal"
     confidence: float = 0.0
     clarifications: list[str] = field(default_factory=list)
     request_id: str = ""
@@ -152,9 +151,6 @@ class ImpactMatrix(Serializable):
 
     def names(self) -> list[str]:
         return [item.object_name for item in self.items]
-
-    def of_type(self, object_type: str) -> list[ImpactItem]:
-        return [item for item in self.items if item.object_type == object_type]
 
 
 # ---------------------------------------------------------------------------

@@ -12,8 +12,6 @@ from ..models import AgentReport
 class Agent(ABC):
     name: str = "agent"
     step: int = 0
-    #: When true the orchestrator stops the pipeline if this agent reports a halt.
-    critical: bool = True
 
     @abstractmethod
     def execute(self, context: ChangeContext) -> str:

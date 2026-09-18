@@ -72,7 +72,7 @@ class DeploymentReadinessAgent(Agent):
                     section=section,
                     item=label,
                     complete=set(expected) == set(generated),
-                    detail=", ".join(generated) or "no change required" if not expected else ", ".join(generated),
+                    detail=", ".join(generated) if expected else "no change required",
                     blocking=bool(expected),
                 )
             )

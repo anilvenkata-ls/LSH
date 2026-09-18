@@ -237,11 +237,6 @@ def add_join(sql: str, join_clause: str, occurrence: int = 0) -> str:
     return sql[:start] + rebuilt + sql[end:]
 
 
-def references_table(sql: str, table: str) -> bool:
-    pattern = re.compile(rf"(?<![\w.]){re.escape(table)}(?![\w])", re.IGNORECASE)
-    return bool(pattern.search(sql))
-
-
 def alias_for_table(sql: str, table: str) -> str | None:
     """Find the alias assigned to ``table`` in a FROM/JOIN clause."""
 

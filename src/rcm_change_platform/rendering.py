@@ -7,6 +7,7 @@ re-render them once test evidence exists without either duplicating logic.
 
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 
 from .context import ChangeContext
@@ -142,8 +143,6 @@ def requirement(context: ChangeContext) -> str:
 
 
 def _json_block(payload: dict) -> str:
-    import json
-
     return json.dumps(payload, indent=2)
 
 
@@ -318,7 +317,7 @@ def pr_description(context: ChangeContext) -> str:
     reviewed = [item.object_name for item in impact.items if item.action is ImpactAction.REVIEW]
 
     lines = [
-        f"## Summary",
+        "## Summary",
         "",
         f"Added `{column}` to the **{request.report}** ({request.request_id}).",
         "",
@@ -334,7 +333,7 @@ def pr_description(context: ChangeContext) -> str:
         "",
         _bullets(refreshed),
         "",
-        "**Reviewed, no change**",
+        "**Review required, no automated edit**",
         "",
         _bullets(reviewed),
         "",

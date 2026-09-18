@@ -1,0 +1,912 @@
+{
+  "request": {
+    "raw_request": "Add Patient Financial Class to the AR Aging Report",
+    "report": "AR Aging Report",
+    "requested_column": "Patient Financial Class",
+    "business_reason": "Needed for payer analysis to split AR aging by payer mix",
+    "change_type": "add_column",
+    "requested_by": "business_user",
+    "confidence": 1.0,
+    "clarifications": [],
+    "request_id": "RCM-1610",
+    "parser": "rule_based"
+  },
+  "metadata": {
+    "column": {
+      "business_term": "Patient Financial Class",
+      "physical_table": "rcm.dim_patient",
+      "physical_column": "patient_financial_class",
+      "data_type": "VARCHAR(50)",
+      "definition": "Patient Financial Classification used to group accounts by the primary funding source (Commercial, Medicare, Medicaid, Self Pay, Workers Comp).",
+      "nullable": false,
+      "domain_values": [
+        "Commercial",
+        "Medicare",
+        "Medicaid",
+        "Self Pay",
+        "Workers Comp"
+      ],
+      "steward": "Revenue Integrity",
+      "pii": false,
+      "certified": true,
+      "match_score": 1.0,
+      "matched_on": "data_dictionary"
+    },
+    "upstream_dependencies": [
+      "glue_patient_dim_load",
+      "source.patient_master"
+    ],
+    "related_tickets": [
+      {
+        "key": "RCM-1187",
+        "summary": "Load patient financial class into the patient dimension",
+        "status": "Done",
+        "objects": [
+          "rcm.dim_patient",
+          "glue_patient_dim_load"
+        ],
+        "notes": "Financial class sourced from the patient master feed; values standardised to the Revenue Integrity domain list."
+      },
+      {
+        "key": "RCM-1402",
+        "summary": "AR Aging Report balance reconciliation variance after aging bucket change",
+        "status": "Done",
+        "objects": [
+          "rcm.sp_load_ar_fact",
+          "rcm.vw_ar_detail",
+          "pb_ar_aging",
+          "AR Aging Report"
+        ],
+        "notes": "Root cause was a re-run of the fact load without clearing the prior snapshot, which double counted balances. Reconciliation of charges, payments, adjustments and balances is now mandatory for every AR change."
+      },
+      {
+        "key": "RCM-1544",
+        "summary": "Add payer analysis page to AR Aging Report",
+        "status": "Done",
+        "objects": [
+          "pb_ar_aging",
+          "AR Aging Report"
+        ],
+        "notes": "Established the pattern of adding dimension attributes to rcm.vw_ar_detail before surfacing them in the dataset."
+      },
+      {
+        "key": "RCM-1610",
+        "summary": "Business request: financial class breakdown for payer analysis",
+        "status": "In Progress",
+        "objects": [
+          "AR Aging Report",
+          "rcm.dim_patient"
+        ],
+        "notes": "Finance wants AR aging split by patient financial class for the monthly payer mix review."
+      }
+    ],
+    "related_documents": [
+      {
+        "title": "AR Aging Report Technical Design",
+        "path": "docs/reports/ar_aging_report.md",
+        "objects": [
+          "rcm.fact_ar",
+          "rcm.vw_ar_detail",
+          "pb_ar_aging",
+          "AR Aging Report"
+        ],
+        "content": "AR Aging Report is sourced from rcm.vw_ar_detail and rcm.vw_ar_aging_summary through the pb_ar_aging import dataset. Balances are snapshotted nightly by rcm.sp_load_ar_fact. Any structural change requires a financial reconciliation of charges, payments, adjustments, denials and balances before deployment."
+      },
+      {
+        "title": "RCM Warehouse Standards",
+        "path": "docs/standards/warehouse_standards.md",
+        "objects": [
+          "rcm.fact_ar",
+          "rcm.dim_patient",
+          "rcm.dim_payer"
+        ],
+        "content": "Dimension attributes surfaced on fact tables must be denormalised in the loading stored procedure rather than joined at the reporting layer. Every fact table column addition requires a migration script, a rollback script and unit tests for null, duplicate and datatype validation."
+      },
+      {
+        "title": "Power BI Deployment Runbook",
+        "path": "docs/standards/power_bi_runbook.md",
+        "objects": [
+          "pb_ar_aging",
+          "pb_denials",
+          "AR Aging Report",
+          "Denials Dashboard"
+        ],
+        "content": "Dataset schema changes require a semantic model refresh in the RCM Analytics workspace, validation of impacted measures, and a published validation report comparing pre-change and post-change totals."
+      }
+    ],
+    "evidence": [
+      {
+        "source": "Data Dictionary",
+        "reference": "Patient Financial Class",
+        "detail": "fuzzy match score 1.00 for 'Patient Financial Class'"
+      },
+      {
+        "source": "Information Schema",
+        "reference": "rcm.dim_patient.patient_financial_class",
+        "detail": "VARCHAR(50), nullable=False"
+      },
+      {
+        "source": "Column Lineage Repository",
+        "reference": "rcm.dim_patient",
+        "detail": "upstream producers: glue_patient_dim_load, source.patient_master"
+      },
+      {
+        "source": "Jira",
+        "reference": "RCM-1187, RCM-1402, RCM-1544, RCM-1610",
+        "detail": "history for rcm.dim_patient and AR Aging Report"
+      },
+      {
+        "source": "Existing Documentation",
+        "reference": "docs/reports/ar_aging_report.md, docs/standards/warehouse_standards.md, docs/standards/power_bi_runbook.md",
+        "detail": "documents referencing rcm.dim_patient or AR Aging Report"
+      }
+    ],
+    "candidates": [
+      {
+        "business_term": "Patient Financial Class",
+        "physical_table": "rcm.dim_patient",
+        "physical_column": "patient_financial_class",
+        "data_type": "VARCHAR(50)",
+        "definition": "Patient Financial Classification used to group accounts by the primary funding source (Commercial, Medicare, Medicaid, Self Pay, Workers Comp).",
+        "nullable": false,
+        "domain_values": [
+          "Commercial",
+          "Medicare",
+          "Medicaid",
+          "Self Pay",
+          "Workers Comp"
+        ],
+        "steward": "Revenue Integrity",
+        "pii": false,
+        "certified": true,
+        "match_score": 1.0,
+        "matched_on": "data_dictionary"
+      }
+    ],
+    "unresolved_reason": ""
+  },
+  "impact": {
+    "items": [
+      {
+        "object_name": "rcm.dim_patient",
+        "object_type": "table",
+        "action": "No Change",
+        "layer": "dimension",
+        "rationale": "Provides the attribute. rcm.sp_load_ar_fact already joins rcm.dim_patient as 'p'.",
+        "owner": "",
+        "risk": "low"
+      },
+      {
+        "object_name": "rcm.fact_ar",
+        "object_type": "table",
+        "action": "Modify",
+        "layer": "fact",
+        "rationale": "Add column patient_financial_class (existing join).",
+        "owner": "",
+        "risk": "medium"
+      },
+      {
+        "object_name": "rcm.sp_load_ar_fact",
+        "object_type": "stored_procedure",
+        "action": "Modify",
+        "layer": "warehouse",
+        "rationale": "Populate rcm.fact_ar.patient_financial_class in the INSERT and SELECT lists.",
+        "owner": "",
+        "risk": "medium"
+      },
+      {
+        "object_name": "rcm.vw_ar_detail",
+        "object_type": "view",
+        "action": "Modify",
+        "layer": "warehouse",
+        "rationale": "Expose patient_financial_class to the reporting layer.",
+        "owner": "",
+        "risk": "low"
+      },
+      {
+        "object_name": "rcm.vw_ar_aging_summary",
+        "object_type": "view",
+        "action": "Review",
+        "layer": "warehouse",
+        "rationale": "Aggregate view: adding patient_financial_class would change the grain, so it needs a business decision rather than an automated edit.",
+        "owner": "",
+        "risk": "medium"
+      },
+      {
+        "object_name": "df_rcm_ar",
+        "object_type": "dataflow",
+        "action": "Refresh",
+        "layer": "reporting",
+        "rationale": "Reload the dataflow so the new column lands in the dataset.",
+        "owner": "",
+        "risk": "low"
+      },
+      {
+        "object_name": "pb_ar_aging",
+        "object_type": "dataset",
+        "action": "Refresh",
+        "layer": "reporting",
+        "rationale": "Refresh the semantic model to pick up the new column.",
+        "owner": "RCM Analytics",
+        "risk": "medium"
+      },
+      {
+        "object_name": "AR Aging Report",
+        "object_type": "report",
+        "action": "Modify",
+        "layer": "reporting",
+        "rationale": "Surface the new column on the impacted visuals.",
+        "owner": "RCM Analytics Team",
+        "risk": "low"
+      },
+      {
+        "object_name": "lambda_run_ar_load",
+        "object_type": "lambda_function",
+        "action": "Review",
+        "layer": "etl",
+        "rationale": "lambda_run_ar_load invokes rcm.sp_load_ar_fact; confirm the orchestration still succeeds after the change.",
+        "owner": "",
+        "risk": "low"
+      },
+      {
+        "object_name": "lambda_refresh_powerbi_dataset",
+        "object_type": "lambda_function",
+        "action": "Review",
+        "layer": "etl",
+        "rationale": "lambda_refresh_powerbi_dataset refreshes pb_ar_aging; confirm the orchestration still succeeds after the change.",
+        "owner": "",
+        "risk": "low"
+      },
+      {
+        "object_name": "sfn_rcm_nightly",
+        "object_type": "step_function",
+        "action": "Review",
+        "layer": "etl",
+        "rationale": "sfn_rcm_nightly orchestrates lambda_run_ar_load; confirm the orchestration still succeeds after the change.",
+        "owner": "",
+        "risk": "low"
+      }
+    ],
+    "propagation_path": [
+      "rcm.dim_patient",
+      "rcm.sp_load_ar_fact",
+      "rcm.fact_ar",
+      "rcm.vw_ar_detail",
+      "pb_ar_aging",
+      "AR Aging Report"
+    ],
+    "report": "AR Aging Report",
+    "source_table": "rcm.dim_patient",
+    "target_fact_table": "rcm.fact_ar",
+    "join_plan": {
+      "strategy": "existing_join",
+      "source_table": "rcm.dim_patient",
+      "alias": "p",
+      "expression": "p.patient_financial_class",
+      "detail": "rcm.sp_load_ar_fact already joins rcm.dim_patient as 'p'."
+    },
+    "warnings": [
+      "rcm.vw_ar_aging_summary aggregates rows; patient_financial_class was deliberately not added to avoid changing its grain."
+    ]
+  },
+  "change_set": {
+    "migration_sql": "-- Forward migration: add patient_financial_class to rcm.fact_ar\n-- Request: RCM-1610 - Add Patient Financial Class to the AR Aging Report\n-- Generated: 2026-09-18 19:21 UTC by the RCM change automation platform\n-- Review required before execution.\n\nALTER TABLE rcm.fact_ar\n    ADD COLUMN patient_financial_class VARCHAR(50);\n\n-- Backfill: CALL rcm.sp_load_ar_fact();  -- full snapshot reload repopulates history\n",
+    "rollback_sql": "-- Rollback: remove patient_financial_class from rcm.fact_ar\n-- Request: RCM-1610 - Add Patient Financial Class to the AR Aging Report\n-- Generated: 2026-09-18 19:21 UTC by the RCM change automation platform\n-- Review required before execution.\n\n-- Restore view rcm.vw_ar_detail\nCREATE OR REPLACE VIEW rcm.vw_ar_detail AS\nSELECT\n    f.claim_id,\n    p.patient_id,\n    p.patient_name,\n    pay.payer_name,\n    f.charge_amount,\n    f.payment_amount,\n    f.adjustment_amount,\n    f.denial_amount,\n    f.balance,\n    f.aging_bucket\nFROM rcm.fact_ar f\nJOIN rcm.dim_patient p ON p.patient_key = f.patient_key\nJOIN rcm.dim_payer pay ON pay.payer_key = f.payer_key;\n\n-- Restore stored_procedure rcm.sp_load_ar_fact\nCREATE OR REPLACE PROCEDURE rcm.sp_load_ar_fact()\nAS $$\nBEGIN\n    DELETE FROM rcm.fact_ar;\n\n    INSERT INTO rcm.fact_ar (\n        ar_key,\n        claim_id,\n        patient_key,\n        payer_key,\n        charge_amount,\n        payment_amount,\n        adjustment_amount,\n        denial_amount,\n        balance,\n        aging_bucket,\n        load_date\n    )\n    SELECT\n        s.ar_source_key,\n        s.claim_id,\n        p.patient_key,\n        pay.payer_key,\n        s.charge_amount,\n        s.payment_amount,\n        s.adjustment_amount,\n        s.denial_amount,\n        s.charge_amount - s.payment_amount - s.adjustment_amount,\n        CASE\n            WHEN s.days_outstanding <= 30 THEN '0-30'\n            WHEN s.days_outstanding <= 60 THEN '31-60'\n            WHEN s.days_outstanding <= 90 THEN '61-90'\n            ELSE '90+'\n        END,\n        s.service_date\n    FROM staging.stg_ar_transactions s\n    JOIN rcm.dim_patient p ON p.patient_id = s.patient_id\n    JOIN rcm.dim_payer pay ON pay.payer_id = s.payer_id;\nEND;\n$$ LANGUAGE plpgsql;\n\nALTER TABLE rcm.fact_ar\n    DROP COLUMN patient_financial_class;\n\n-- CALL rcm.sp_load_ar_fact();  -- rebuild the snapshot with the original definition\n",
+    "object_changes": [
+      {
+        "object_name": "rcm.sp_load_ar_fact",
+        "object_type": "stored_procedure",
+        "before": "CREATE OR REPLACE PROCEDURE rcm.sp_load_ar_fact()\nAS $$\nBEGIN\n    DELETE FROM rcm.fact_ar;\n\n    INSERT INTO rcm.fact_ar (\n        ar_key,\n        claim_id,\n        patient_key,\n        payer_key,\n        charge_amount,\n        payment_amount,\n        adjustment_amount,\n        denial_amount,\n        balance,\n        aging_bucket,\n        load_date\n    )\n    SELECT\n        s.ar_source_key,\n        s.claim_id,\n        p.patient_key,\n        pay.payer_key,\n        s.charge_amount,\n        s.payment_amount,\n        s.adjustment_amount,\n        s.denial_amount,\n        s.charge_amount - s.payment_amount - s.adjustment_amount,\n        CASE\n            WHEN s.days_outstanding <= 30 THEN '0-30'\n            WHEN s.days_outstanding <= 60 THEN '31-60'\n            WHEN s.days_outstanding <= 90 THEN '61-90'\n            ELSE '90+'\n        END,\n        s.service_date\n    FROM staging.stg_ar_transactions s\n    JOIN rcm.dim_patient p ON p.patient_id = s.patient_id\n    JOIN rcm.dim_payer pay ON pay.payer_id = s.payer_id;\nEND;\n$$ LANGUAGE plpgsql;",
+        "after": "CREATE OR REPLACE PROCEDURE rcm.sp_load_ar_fact()\nAS $$\nBEGIN\n    DELETE FROM rcm.fact_ar;\n\n    INSERT INTO rcm.fact_ar (\n        ar_key,\n        claim_id,\n        patient_key,\n        payer_key,\n        charge_amount,\n        payment_amount,\n        adjustment_amount,\n        denial_amount,\n        balance,\n        aging_bucket,\n        load_date,\n        patient_financial_class\n    )\n    SELECT\n        s.ar_source_key,\n        s.claim_id,\n        p.patient_key,\n        pay.payer_key,\n        s.charge_amount,\n        s.payment_amount,\n        s.adjustment_amount,\n        s.denial_amount,\n        s.charge_amount - s.payment_amount - s.adjustment_amount,\n        CASE\n            WHEN s.days_outstanding <= 30 THEN '0-30'\n            WHEN s.days_outstanding <= 60 THEN '31-60'\n            WHEN s.days_outstanding <= 90 THEN '61-90'\n            ELSE '90+'\n        END,\n        s.service_date,\n        p.patient_financial_class\n    FROM staging.stg_ar_transactions s\n    JOIN rcm.dim_patient p ON p.patient_id = s.patient_id\n    JOIN rcm.dim_payer pay ON pay.payer_id = s.payer_id;\nEND;\n$$ LANGUAGE plpgsql;",
+        "diff": "--- a/rcm.sp_load_ar_fact.sql\n+++ b/rcm.sp_load_ar_fact.sql\n@@ -14,7 +14,8 @@\n         denial_amount,\n         balance,\n         aging_bucket,\n-        load_date\n+        load_date,\n+        patient_financial_class\n     )\n     SELECT\n         s.ar_source_key,\n@@ -32,7 +33,8 @@\n             WHEN s.days_outstanding <= 90 THEN '61-90'\n             ELSE '90+'\n         END,\n-        s.service_date\n+        s.service_date,\n+        p.patient_financial_class\n     FROM staging.stg_ar_transactions s\n     JOIN rcm.dim_patient p ON p.patient_id = s.patient_id\n     JOIN rcm.dim_payer pay ON pay.payer_id = s.payer_id;\n",
+        "summary": "projected p.patient_financial_class into patient_financial_class"
+      },
+      {
+        "object_name": "rcm.vw_ar_detail",
+        "object_type": "view",
+        "before": "CREATE OR REPLACE VIEW rcm.vw_ar_detail AS\nSELECT\n    f.claim_id,\n    p.patient_id,\n    p.patient_name,\n    pay.payer_name,\n    f.charge_amount,\n    f.payment_amount,\n    f.adjustment_amount,\n    f.denial_amount,\n    f.balance,\n    f.aging_bucket\nFROM rcm.fact_ar f\nJOIN rcm.dim_patient p ON p.patient_key = f.patient_key\nJOIN rcm.dim_payer pay ON pay.payer_key = f.payer_key;",
+        "after": "CREATE OR REPLACE VIEW rcm.vw_ar_detail AS\nSELECT\n    f.claim_id,\n    p.patient_id,\n    p.patient_name,\n    pay.payer_name,\n    f.charge_amount,\n    f.payment_amount,\n    f.adjustment_amount,\n    f.denial_amount,\n    f.balance,\n    f.aging_bucket,\n    f.patient_financial_class\nFROM rcm.fact_ar f\nJOIN rcm.dim_patient p ON p.patient_key = f.patient_key\nJOIN rcm.dim_payer pay ON pay.payer_key = f.payer_key;",
+        "diff": "--- a/rcm.vw_ar_detail.sql\n+++ b/rcm.vw_ar_detail.sql\n@@ -9,7 +9,8 @@\n     f.adjustment_amount,\n     f.denial_amount,\n     f.balance,\n-    f.aging_bucket\n+    f.aging_bucket,\n+    f.patient_financial_class\n FROM rcm.fact_ar f\n JOIN rcm.dim_patient p ON p.patient_key = f.patient_key\n JOIN rcm.dim_payer pay ON pay.payer_key = f.payer_key;",
+        "summary": "selected f.patient_financial_class"
+      }
+    ],
+    "target_column": "patient_financial_class",
+    "target_table": "rcm.fact_ar",
+    "notes": [
+      "rcm.vw_ar_aging_summary aggregates rows; patient_financial_class was deliberately not added to avoid changing its grain."
+    ]
+  },
+  "unit_tests": {
+    "suite": "unit_tests_patient_financial_class",
+    "results": [
+      {
+        "name": "column_population",
+        "category": "Column Population",
+        "status": "passed",
+        "expectation": "at least one populated row",
+        "actual": "12",
+        "message": "",
+        "severity": "blocking"
+      },
+      {
+        "name": "null_validation",
+        "category": "Null Validation",
+        "status": "passed",
+        "expectation": "0 records",
+        "actual": "0",
+        "message": "",
+        "severity": "blocking"
+      },
+      {
+        "name": "row_count_validation",
+        "category": "Row Count Validation",
+        "status": "passed",
+        "expectation": "matches the source row count from staging.stg_ar_transactions",
+        "actual": "12 vs 12",
+        "message": "",
+        "severity": "blocking"
+      },
+      {
+        "name": "duplicate_validation",
+        "category": "Duplicate Validation",
+        "status": "passed",
+        "expectation": "0 records",
+        "actual": "0",
+        "message": "",
+        "severity": "blocking"
+      },
+      {
+        "name": "datatype_validation",
+        "category": "Data Type Validation",
+        "status": "passed",
+        "expectation": "0 records exceeding VARCHAR(50)",
+        "actual": "0",
+        "message": "",
+        "severity": "blocking"
+      },
+      {
+        "name": "domain_validation",
+        "category": "Domain Validation",
+        "status": "passed",
+        "expectation": "0 records outside the certified domain",
+        "actual": "0",
+        "message": "",
+        "severity": "blocking"
+      },
+      {
+        "name": "source_to_target_parity",
+        "category": "Source to Target Validation",
+        "status": "passed",
+        "expectation": "0 records where the fact value differs from the source dimension",
+        "actual": "0",
+        "message": "",
+        "severity": "blocking"
+      },
+      {
+        "name": "view_exposure_vw_ar_detail",
+        "category": "Reporting Layer Exposure",
+        "status": "passed",
+        "expectation": "view compiles and exposes the new column",
+        "actual": "12",
+        "message": "",
+        "severity": "blocking"
+      }
+    ],
+    "executed": true
+  },
+  "integration_tests": {
+    "suite": "integration_tests",
+    "results": [
+      {
+        "name": "reconciliation::rcm.fact_ar row count",
+        "category": "Financial Reconciliation",
+        "status": "passed",
+        "expectation": "unchanged before and after",
+        "actual": "before=12.00 after=12.00 delta=0.00",
+        "message": "",
+        "severity": "blocking"
+      },
+      {
+        "name": "reconciliation::rcm.fact_ar SUM(charge_amount)",
+        "category": "Financial Reconciliation",
+        "status": "passed",
+        "expectation": "unchanged before and after",
+        "actual": "before=27,921.50 after=27,921.50 delta=0.00",
+        "message": "",
+        "severity": "blocking"
+      },
+      {
+        "name": "reconciliation::rcm.fact_ar SUM(payment_amount)",
+        "category": "Financial Reconciliation",
+        "status": "passed",
+        "expectation": "unchanged before and after",
+        "actual": "before=17,075.00 after=17,075.00 delta=0.00",
+        "message": "",
+        "severity": "blocking"
+      },
+      {
+        "name": "reconciliation::rcm.fact_ar SUM(adjustment_amount)",
+        "category": "Financial Reconciliation",
+        "status": "passed",
+        "expectation": "unchanged before and after",
+        "actual": "before=4,356.50 after=4,356.50 delta=0.00",
+        "message": "",
+        "severity": "blocking"
+      },
+      {
+        "name": "reconciliation::rcm.fact_ar SUM(denial_amount)",
+        "category": "Financial Reconciliation",
+        "status": "passed",
+        "expectation": "unchanged before and after",
+        "actual": "before=1,820.00 after=1,820.00 delta=0.00",
+        "message": "",
+        "severity": "blocking"
+      },
+      {
+        "name": "reconciliation::rcm.fact_ar SUM(balance)",
+        "category": "Financial Reconciliation",
+        "status": "passed",
+        "expectation": "unchanged before and after",
+        "actual": "before=6,490.00 after=6,490.00 delta=0.00",
+        "message": "",
+        "severity": "blocking"
+      },
+      {
+        "name": "reconciliation::rcm.fact_ar DISTINCT(claim_id)",
+        "category": "Financial Reconciliation",
+        "status": "passed",
+        "expectation": "unchanged before and after",
+        "actual": "before=12.00 after=12.00 delta=0.00",
+        "message": "",
+        "severity": "blocking"
+      },
+      {
+        "name": "reconciliation::rcm.vw_ar_detail row count",
+        "category": "Financial Reconciliation",
+        "status": "passed",
+        "expectation": "unchanged before and after",
+        "actual": "before=12.00 after=12.00 delta=0.00",
+        "message": "",
+        "severity": "blocking"
+      },
+      {
+        "name": "reconciliation::rcm.vw_ar_detail SUM(balance)",
+        "category": "Financial Reconciliation",
+        "status": "passed",
+        "expectation": "unchanged before and after",
+        "actual": "before=6,490.00 after=6,490.00 delta=0.00",
+        "message": "",
+        "severity": "blocking"
+      },
+      {
+        "name": "reconciliation::rcm.vw_ar_aging_summary row count",
+        "category": "Financial Reconciliation",
+        "status": "passed",
+        "expectation": "unchanged before and after",
+        "actual": "before=4.00 after=4.00 delta=0.00",
+        "message": "",
+        "severity": "blocking"
+      },
+      {
+        "name": "reconciliation::rcm.vw_ar_aging_summary SUM(total_balance)",
+        "category": "Financial Reconciliation",
+        "status": "passed",
+        "expectation": "unchanged before and after",
+        "actual": "before=6,490.00 after=6,490.00 delta=0.00",
+        "message": "",
+        "severity": "blocking"
+      },
+      {
+        "name": "parity::rcm.vw_ar_detail::balance",
+        "category": "Reporting Parity",
+        "status": "passed",
+        "expectation": "equals COALESCE(SUM(balance), 0) from rcm.fact_ar",
+        "actual": "6490 vs 6490",
+        "message": "",
+        "severity": "blocking"
+      },
+      {
+        "name": "parity::rcm.vw_ar_detail::row_count",
+        "category": "Reporting Parity",
+        "status": "passed",
+        "expectation": "equals the row count of rcm.fact_ar",
+        "actual": "12 vs 12",
+        "message": "",
+        "severity": "blocking"
+      },
+      {
+        "name": "parity::rcm.vw_ar_aging_summary::total_balance",
+        "category": "Reporting Parity",
+        "status": "passed",
+        "expectation": "equals COALESCE(SUM(balance), 0) from rcm.fact_ar",
+        "actual": "6490 vs 6490",
+        "message": "",
+        "severity": "blocking"
+      }
+    ],
+    "executed": true
+  },
+  "reconciliation": {
+    "lines": [
+      {
+        "metric": "rcm.fact_ar row count",
+        "before": 12.0,
+        "after": 12.0,
+        "tolerance": 0.01
+      },
+      {
+        "metric": "rcm.fact_ar SUM(charge_amount)",
+        "before": 27921.5,
+        "after": 27921.5,
+        "tolerance": 0.01
+      },
+      {
+        "metric": "rcm.fact_ar SUM(payment_amount)",
+        "before": 17075.0,
+        "after": 17075.0,
+        "tolerance": 0.01
+      },
+      {
+        "metric": "rcm.fact_ar SUM(adjustment_amount)",
+        "before": 4356.5,
+        "after": 4356.5,
+        "tolerance": 0.01
+      },
+      {
+        "metric": "rcm.fact_ar SUM(denial_amount)",
+        "before": 1820.0,
+        "after": 1820.0,
+        "tolerance": 0.01
+      },
+      {
+        "metric": "rcm.fact_ar SUM(balance)",
+        "before": 6490.0,
+        "after": 6490.0,
+        "tolerance": 0.01
+      },
+      {
+        "metric": "rcm.fact_ar DISTINCT(claim_id)",
+        "before": 12.0,
+        "after": 12.0,
+        "tolerance": 0.01
+      },
+      {
+        "metric": "rcm.vw_ar_detail row count",
+        "before": 12.0,
+        "after": 12.0,
+        "tolerance": 0.01
+      },
+      {
+        "metric": "rcm.vw_ar_detail SUM(balance)",
+        "before": 6490.0,
+        "after": 6490.0,
+        "tolerance": 0.01
+      },
+      {
+        "metric": "rcm.vw_ar_aging_summary row count",
+        "before": 4.0,
+        "after": 4.0,
+        "tolerance": 0.01
+      },
+      {
+        "metric": "rcm.vw_ar_aging_summary SUM(total_balance)",
+        "before": 6490.0,
+        "after": 6490.0,
+        "tolerance": 0.01
+      }
+    ],
+    "executed": true,
+    "notes": []
+  },
+  "power_bi": {
+    "dataset": "pb_ar_aging",
+    "report": "AR Aging Report",
+    "workspace": "RCM Analytics",
+    "changes": [
+      {
+        "target": "pb_ar_aging.AR Detail",
+        "target_type": "dataset_table",
+        "action": "Add column",
+        "detail": "Add 'patient_financial_class' from rcm.vw_ar_detail to table 'AR Detail'."
+      },
+      {
+        "target": "pb_ar_aging",
+        "target_type": "dataset",
+        "action": "Refresh semantic model",
+        "detail": "Import model on schedule 'Daily 05:30 ET' must be refreshed before the column appears."
+      },
+      {
+        "target": "Total AR Balance",
+        "target_type": "measure",
+        "action": "Validate",
+        "detail": "Measure sits on the modified table; confirm totals are unchanged after the refresh."
+      },
+      {
+        "target": "Total Charges",
+        "target_type": "measure",
+        "action": "Validate",
+        "detail": "Measure sits on the modified table; confirm totals are unchanged after the refresh."
+      },
+      {
+        "target": "Total Payments",
+        "target_type": "measure",
+        "action": "Validate",
+        "detail": "Measure sits on the modified table; confirm totals are unchanged after the refresh."
+      },
+      {
+        "target": "Total Adjustments",
+        "target_type": "measure",
+        "action": "Validate",
+        "detail": "Measure sits on the modified table; confirm totals are unchanged after the refresh."
+      },
+      {
+        "target": "Total Denials",
+        "target_type": "measure",
+        "action": "Validate",
+        "detail": "Measure sits on the modified table; confirm totals are unchanged after the refresh."
+      },
+      {
+        "target": "AR Over 90 Pct",
+        "target_type": "measure",
+        "action": "Validate",
+        "detail": "Measure sits on the modified table; confirm totals are unchanged after the refresh."
+      },
+      {
+        "target": "Aging Summary / v_summary_matrix (matrix)",
+        "target_type": "visual",
+        "action": "Review field placement",
+        "detail": "Candidate visual for surfacing 'Patient Financial Class'."
+      },
+      {
+        "target": "Aging Summary / v_balance_card (card)",
+        "target_type": "visual",
+        "action": "Review field placement",
+        "detail": "Candidate visual for surfacing 'Patient Financial Class'."
+      },
+      {
+        "target": "AR Detail / v_detail_table (table)",
+        "target_type": "visual",
+        "action": "Review field placement",
+        "detail": "Candidate visual for surfacing 'Patient Financial Class'."
+      },
+      {
+        "target": "Payer Analysis / v_payer_bar (clustered_bar)",
+        "target_type": "visual",
+        "action": "Review field placement",
+        "detail": "Candidate visual for surfacing 'Patient Financial Class'."
+      },
+      {
+        "target": "Payer Analysis / v_payer_slicer (slicer)",
+        "target_type": "visual",
+        "action": "Review field placement",
+        "detail": "Candidate visual for surfacing 'Patient Financial Class'."
+      },
+      {
+        "target": "AR Aging Report",
+        "target_type": "report",
+        "action": "Publish validation",
+        "detail": "Publish to the workspace and compare totals against the pre-change snapshot."
+      }
+    ],
+    "impacted_measures": [
+      "Total AR Balance",
+      "Total Charges",
+      "Total Payments",
+      "Total Adjustments",
+      "Total Denials",
+      "AR Over 90 Pct"
+    ],
+    "impacted_relationships": [
+      "AR Detail[aging_bucket] -> AR Aging Summary[aging_bucket]"
+    ],
+    "impacted_visuals": [
+      "Aging Summary / v_summary_matrix (matrix)",
+      "Aging Summary / v_balance_card (card)",
+      "AR Detail / v_detail_table (table)",
+      "Payer Analysis / v_payer_bar (clustered_bar)",
+      "Payer Analysis / v_payer_slicer (slicer)"
+    ],
+    "refresh_required": true,
+    "tmdl_snippet": "table 'AR Detail'\n\tcolumn patient_financial_class\n\t\tdataType: string\n\t\tsourceColumn: patient_financial_class\n\t\tdisplayName: Patient Financial Class\n\t\tsummarizeBy: none\n\t\tisHidden: false\n"
+  },
+  "checklist": {
+    "items": [
+      {
+        "section": "Development",
+        "item": "Migration script generated",
+        "complete": true,
+        "detail": "",
+        "blocking": true
+      },
+      {
+        "section": "Development",
+        "item": "Stored procedure updated",
+        "complete": true,
+        "detail": "rcm.sp_load_ar_fact",
+        "blocking": true
+      },
+      {
+        "section": "Development",
+        "item": "View updated",
+        "complete": true,
+        "detail": "rcm.vw_ar_detail",
+        "blocking": true
+      },
+      {
+        "section": "Development",
+        "item": "Rollback script generated",
+        "complete": true,
+        "detail": "",
+        "blocking": true
+      },
+      {
+        "section": "Testing",
+        "item": "Unit tests generated",
+        "complete": true,
+        "detail": "8 cases",
+        "blocking": true
+      },
+      {
+        "section": "Testing",
+        "item": "Unit tests passed",
+        "complete": true,
+        "detail": "8 checks",
+        "blocking": true
+      },
+      {
+        "section": "Testing",
+        "item": "Integration tests passed",
+        "complete": true,
+        "detail": "14 checks",
+        "blocking": true
+      },
+      {
+        "section": "Testing",
+        "item": "Financial reconciliation passed",
+        "complete": true,
+        "detail": "11 metrics compared",
+        "blocking": true
+      },
+      {
+        "section": "Reporting",
+        "item": "Power BI change plan generated",
+        "complete": true,
+        "detail": "14 actions",
+        "blocking": true
+      },
+      {
+        "section": "Reporting",
+        "item": "Semantic model refresh scheduled",
+        "complete": true,
+        "detail": "dataset pb_ar_aging",
+        "blocking": true
+      },
+      {
+        "section": "Reporting",
+        "item": "Report visuals reviewed by a human",
+        "complete": false,
+        "detail": "manual step: place the new field on the intended visuals",
+        "blocking": false
+      },
+      {
+        "section": "Documentation",
+        "item": "Technical design",
+        "complete": true,
+        "detail": "5091 characters",
+        "blocking": true
+      },
+      {
+        "section": "Documentation",
+        "item": "PR description",
+        "complete": true,
+        "detail": "1009 characters",
+        "blocking": true
+      },
+      {
+        "section": "Documentation",
+        "item": "Release notes",
+        "complete": true,
+        "detail": "1015 characters",
+        "blocking": true
+      },
+      {
+        "section": "Governance",
+        "item": "Column certified in the data dictionary",
+        "complete": true,
+        "detail": "Revenue Integrity",
+        "blocking": false
+      },
+      {
+        "section": "Governance",
+        "item": "PII review",
+        "complete": true,
+        "detail": "no PII involved",
+        "blocking": false
+      }
+    ],
+    "blockers": []
+  },
+  "agents": [
+    {
+      "agent": "request_intake",
+      "step": 1,
+      "status": "completed",
+      "summary": "parsed 'Patient Financial Class' for report 'AR Aging Report' (confidence 1.00, parser rule_based)",
+      "duration_ms": 0.415,
+      "warnings": []
+    },
+    {
+      "agent": "metadata_discovery",
+      "step": 2,
+      "status": "completed",
+      "summary": "resolved to rcm.dim_patient.patient_financial_class VARCHAR(50) via data_dictionary (score 1.00)",
+      "duration_ms": 0.686,
+      "warnings": []
+    },
+    {
+      "agent": "impact_analysis",
+      "step": 3,
+      "status": "completed",
+      "summary": "11 impacted objects, 4 require code changes: rcm.fact_ar, rcm.sp_load_ar_fact, rcm.vw_ar_detail, AR Aging Report",
+      "duration_ms": 0.454,
+      "warnings": []
+    },
+    {
+      "agent": "sql_change_generation",
+      "step": 4,
+      "status": "completed",
+      "summary": "generated migration for rcm.fact_ar.patient_financial_class and edits to rcm.sp_load_ar_fact, rcm.vw_ar_detail",
+      "duration_ms": 0.886,
+      "warnings": []
+    },
+    {
+      "agent": "documentation",
+      "step": 5,
+      "status": "completed",
+      "summary": "drafted 5 documents: Requirement.md, Technical_Design.md, PR_Description.md, Release_Notes.md, Validation_Report.md",
+      "duration_ms": 0.12,
+      "warnings": []
+    },
+    {
+      "agent": "unit_test_generation",
+      "step": 6,
+      "status": "completed",
+      "summary": "8/8 unit tests passed",
+      "duration_ms": 2.728,
+      "warnings": []
+    },
+    {
+      "agent": "integration_testing",
+      "step": 7,
+      "status": "completed",
+      "summary": "14/14 integration checks passed; reconciliation balanced",
+      "duration_ms": 3.111,
+      "warnings": []
+    },
+    {
+      "agent": "power_bi_impact",
+      "step": 8,
+      "status": "completed",
+      "summary": "14 Power BI actions for dataset 'pb_ar_aging': 6 measures, 5 visuals to review",
+      "duration_ms": 0.05,
+      "warnings": []
+    },
+    {
+      "agent": "deployment_readiness",
+      "step": 9,
+      "status": "completed",
+      "summary": "15/16 checklist items complete; ready for deployment",
+      "duration_ms": 0.062,
+      "warnings": []
+    },
+    {
+      "agent": "final_output",
+      "step": 10,
+      "status": "completed",
+      "summary": "wrote 15 artifacts to examples/ar_aging_patient_financial_class/Change_Request",
+      "duration_ms": 4.322,
+      "warnings": []
+    }
+  ],
+  "warnings": []
+}

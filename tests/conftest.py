@@ -22,6 +22,15 @@ def _seed_payload() -> dict:
     }
 
 
+@pytest.fixture(autouse=True)
+def offline_llm(monkeypatch):
+    """Keep every test hermetic, whatever the developer has exported."""
+
+    for variable in ("ANTHROPIC_API_KEY", "OPENAI_API_KEY", "RCM_LLM_MODEL"):
+        monkeypatch.delenv(variable, raising=False)
+    monkeypatch.setenv("RCM_LLM_PROVIDER", "none")
+
+
 @pytest.fixture
 def seed_payload() -> dict:
     return _seed_payload()

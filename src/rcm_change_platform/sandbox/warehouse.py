@@ -62,7 +62,6 @@ class WarehouseSandbox:
             view["name"]: view["definition"] for view in repo.views
         }
         self._extra_columns: dict[str, list[tuple[str, str]]] = {}
-        self.applied_statements: list[str] = []
 
     # -- lifecycle ----------------------------------------------------
     def __enter__(self) -> "WarehouseSandbox":
@@ -136,7 +135,6 @@ class WarehouseSandbox:
             if not sqlkit.is_executable(statement):
                 continue
             self.execute_script(statement)
-            self.applied_statements.append(statement)
 
         for change in change_set.object_changes:
             if change.object_type == "stored_procedure":
@@ -182,10 +180,6 @@ class WarehouseSandbox:
 
     def snapshot(self, metrics: dict[str, str]) -> dict[str, float]:
         return {name: float(self.scalar(sql) or 0.0) for name, sql in metrics.items()}
-
-    def table_columns(self, table_name: str) -> list[str]:
-        rows = self.connection.execute(f'PRAGMA table_info("{table_name}")').fetchall()
-        return [row["name"] for row in rows]
 
     # -- assertions ----------------------------------------------------
     def run_case(self, case: TestCase) -> TestResult:

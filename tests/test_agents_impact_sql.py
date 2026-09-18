@@ -28,6 +28,8 @@ def test_impact_matrix_covers_warehouse_etl_and_reporting(run_agents):
     assert result["AR Aging Report"] is ImpactAction.MODIFY
     assert result["rcm.dim_patient"] is ImpactAction.NO_CHANGE
     assert result["lambda_run_ar_load"] is ImpactAction.REVIEW
+    # control edges are followed transitively, so the orchestrator is listed too
+    assert result["sfn_rcm_nightly"] is ImpactAction.REVIEW
 
 
 def test_impact_leaves_unrelated_reports_alone(run_agents):
@@ -76,11 +78,16 @@ def test_unreachable_source_halts_the_run(run_agents, make_repo):
     assert "not joinable" in context.warnings[-1]
 
 
-def test_propagation_path_ends_at_the_report(run_agents):
+def test_propagation_path_follows_the_fact_load_not_the_shortest_route(run_agents):
     context = run_agents(THROUGH_IMPACT)
-    path = context.impact.propagation_path
-    assert path[0] == "rcm.dim_patient"
-    assert path[-1] == "AR Aging Report"
+    assert context.impact.propagation_path == [
+        "rcm.dim_patient",
+        "rcm.sp_load_ar_fact",
+        "rcm.fact_ar",
+        "rcm.vw_ar_detail",
+        "pb_ar_aging",
+        "AR Aging Report",
+    ]
 
 
 def test_existing_column_is_reported_as_no_change(run_agents, make_repo):

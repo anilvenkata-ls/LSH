@@ -38,10 +38,6 @@ class Column:
     nullable: bool
     description: str
 
-    @property
-    def qualified_name(self) -> str:
-        return f"{self.table}.{self.name}"
-
 
 class MetadataRepository:
     def __init__(self, payload: dict[str, dict[str, Any]]):
