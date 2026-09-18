@@ -1,0 +1,22 @@
+{
+  "documents": [
+    {
+      "title": "AR Aging Report Technical Design",
+      "path": "docs/reports/ar_aging_report.md",
+      "objects": ["rcm.fact_ar", "rcm.vw_ar_detail", "pb_ar_aging", "AR Aging Report"],
+      "content": "AR Aging Report is sourced from rcm.vw_ar_detail and rcm.vw_ar_aging_summary through the pb_ar_aging import dataset. Balances are snapshotted nightly by rcm.sp_load_ar_fact. Any structural change requires a financial reconciliation of charges, payments, adjustments, denials and balances before deployment."
+    },
+    {
+      "title": "RCM Warehouse Standards",
+      "path": "docs/standards/warehouse_standards.md",
+      "objects": ["rcm.fact_ar", "rcm.dim_patient", "rcm.dim_payer"],
+      "content": "Dimension attributes surfaced on fact tables must be denormalised in the loading stored procedure rather than joined at the reporting layer. Every fact table column addition requires a migration script, a rollback script and unit tests for null, duplicate and datatype validation."
+    },
+    {
+      "title": "Power BI Deployment Runbook",
+      "path": "docs/standards/power_bi_runbook.md",
+      "objects": ["pb_ar_aging", "pb_denials", "AR Aging Report", "Denials Dashboard"],
+      "content": "Dataset schema changes require a semantic model refresh in the RCM Analytics workspace, validation of impacted measures, and a published validation report comparing pre-change and post-change totals."
+    }
+  ]
+}

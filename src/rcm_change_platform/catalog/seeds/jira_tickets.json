@@ -1,0 +1,32 @@
+{
+  "tickets": [
+    {
+      "key": "RCM-1187",
+      "summary": "Load patient financial class into the patient dimension",
+      "status": "Done",
+      "objects": ["rcm.dim_patient", "glue_patient_dim_load"],
+      "notes": "Financial class sourced from the patient master feed; values standardised to the Revenue Integrity domain list."
+    },
+    {
+      "key": "RCM-1402",
+      "summary": "AR Aging Report balance reconciliation variance after aging bucket change",
+      "status": "Done",
+      "objects": ["rcm.sp_load_ar_fact", "rcm.vw_ar_detail", "pb_ar_aging", "AR Aging Report"],
+      "notes": "Root cause was a re-run of the fact load without clearing the prior snapshot, which double counted balances. Reconciliation of charges, payments, adjustments and balances is now mandatory for every AR change."
+    },
+    {
+      "key": "RCM-1544",
+      "summary": "Add payer analysis page to AR Aging Report",
+      "status": "Done",
+      "objects": ["pb_ar_aging", "AR Aging Report"],
+      "notes": "Established the pattern of adding dimension attributes to rcm.vw_ar_detail before surfacing them in the dataset."
+    },
+    {
+      "key": "RCM-1610",
+      "summary": "Business request: financial class breakdown for payer analysis",
+      "status": "In Progress",
+      "objects": ["AR Aging Report", "rcm.dim_patient"],
+      "notes": "Finance wants AR aging split by patient financial class for the monthly payer mix review."
+    }
+  ]
+}

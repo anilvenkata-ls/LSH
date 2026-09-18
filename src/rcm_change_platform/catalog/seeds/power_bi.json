@@ -1,0 +1,127 @@
+{
+  "dataflows": [
+    {
+      "name": "df_rcm_ar",
+      "object_type": "dataflow",
+      "description": "Power BI dataflow staging the AR detail and summary views.",
+      "sources": ["rcm.vw_ar_detail", "rcm.vw_ar_aging_summary"],
+      "consumers": ["pb_ar_aging"]
+    }
+  ],
+  "datasets": [
+    {
+      "name": "pb_ar_aging",
+      "object_type": "dataset",
+      "workspace": "RCM Analytics",
+      "storage_mode": "Import",
+      "refresh_schedule": "Daily 05:30 ET",
+      "sources": ["rcm.vw_ar_detail", "rcm.vw_ar_aging_summary"],
+      "tables": [
+        {
+          "name": "AR Detail",
+          "source": "rcm.vw_ar_detail",
+          "columns": [
+            "claim_id",
+            "patient_id",
+            "patient_name",
+            "payer_name",
+            "charge_amount",
+            "payment_amount",
+            "adjustment_amount",
+            "denial_amount",
+            "balance",
+            "aging_bucket"
+          ]
+        },
+        {
+          "name": "AR Aging Summary",
+          "source": "rcm.vw_ar_aging_summary",
+          "columns": ["aging_bucket", "claim_count", "total_balance"]
+        }
+      ],
+      "relationships": [
+        {
+          "from": "AR Detail[aging_bucket]",
+          "to": "AR Aging Summary[aging_bucket]",
+          "cardinality": "many_to_one",
+          "cross_filter": "single"
+        }
+      ],
+      "measures": [
+        {"name": "Total AR Balance", "table": "AR Detail", "expression": "SUM('AR Detail'[balance])", "format": "Currency"},
+        {"name": "Total Charges", "table": "AR Detail", "expression": "SUM('AR Detail'[charge_amount])", "format": "Currency"},
+        {"name": "Total Payments", "table": "AR Detail", "expression": "SUM('AR Detail'[payment_amount])", "format": "Currency"},
+        {"name": "Total Adjustments", "table": "AR Detail", "expression": "SUM('AR Detail'[adjustment_amount])", "format": "Currency"},
+        {"name": "Total Denials", "table": "AR Detail", "expression": "SUM('AR Detail'[denial_amount])", "format": "Currency"},
+        {"name": "AR Over 90 Pct", "table": "AR Detail", "expression": "DIVIDE(CALCULATE([Total AR Balance], 'AR Detail'[aging_bucket] = \"90+\"), [Total AR Balance])", "format": "Percent"}
+      ]
+    },
+    {
+      "name": "pb_denials",
+      "object_type": "dataset",
+      "workspace": "RCM Analytics",
+      "storage_mode": "Import",
+      "refresh_schedule": "Daily 06:00 ET",
+      "sources": ["rcm.vw_denial_detail"],
+      "tables": [
+        {
+          "name": "Denial Detail",
+          "source": "rcm.vw_denial_detail",
+          "columns": ["claim_id", "payer_name", "denial_code", "denial_amount"]
+        }
+      ],
+      "relationships": [],
+      "measures": [
+        {"name": "Total Denied", "table": "Denial Detail", "expression": "SUM('Denial Detail'[denial_amount])", "format": "Currency"}
+      ]
+    }
+  ],
+  "reports": [
+    {
+      "name": "AR Aging Report",
+      "object_type": "report",
+      "aliases": ["ar aging", "ar aging dashboard", "accounts receivable aging"],
+      "dataset": "pb_ar_aging",
+      "workspace": "RCM Analytics",
+      "owner": "RCM Analytics Team",
+      "pages": [
+        {
+          "name": "Aging Summary",
+          "visuals": [
+            {"id": "v_summary_matrix", "type": "matrix", "rows": ["aging_bucket"], "values": ["Total AR Balance", "AR Over 90 Pct"]},
+            {"id": "v_balance_card", "type": "card", "values": ["Total AR Balance"]}
+          ]
+        },
+        {
+          "name": "AR Detail",
+          "visuals": [
+            {"id": "v_detail_table", "type": "table", "columns": ["claim_id", "patient_name", "payer_name", "aging_bucket"], "values": ["Total AR Balance"]}
+          ]
+        },
+        {
+          "name": "Payer Analysis",
+          "visuals": [
+            {"id": "v_payer_bar", "type": "clustered_bar", "axis": ["payer_name"], "values": ["Total AR Balance"]},
+            {"id": "v_payer_slicer", "type": "slicer", "columns": ["payer_name"]}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Denials Dashboard",
+      "object_type": "report",
+      "aliases": ["denials", "denial dashboard"],
+      "dataset": "pb_denials",
+      "workspace": "RCM Analytics",
+      "owner": "Denials Management",
+      "pages": [
+        {
+          "name": "Denial Overview",
+          "visuals": [
+            {"id": "v_denial_bar", "type": "clustered_bar", "axis": ["denial_code"], "values": ["Total Denied"]}
+          ]
+        }
+      ]
+    }
+  ]
+}
