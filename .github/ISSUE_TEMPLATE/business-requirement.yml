@@ -1,0 +1,107 @@
+name: Business requirement
+description: Describe a business need. No technical detail required — a product owner will turn this into an intake document with you.
+title: "[REQ] <short title>"
+labels: ["stage:intake"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for raising this. Describe the **problem** and the **outcome you need**, not the solution.
+        A product owner / BA will follow up with a small batch of questions and draft the intake document
+        (`docs/features/REQ-nnn-.../intake.md`) with you. Process: `docs/framework/01-requirements-intake.md`.
+
+  - type: input
+    id: requester
+    attributes:
+      label: Accountable requester
+      description: One named person who can answer questions and sign off. Name, role, and how to reach you.
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is the problem today?
+      description: What is hard, slow, risky, or impossible? Who experiences it and how often? Numbers help (hours/month, error rate, revenue).
+    validations:
+      required: true
+
+  - type: textarea
+    id: outcome
+    attributes:
+      label: What should be true after this is done?
+      description: Describe the outcome, not the screen or button. "Finance can reconcile invoices without re-keying" rather than "add an export button".
+    validations:
+      required: true
+
+  - type: textarea
+    id: value
+    attributes:
+      label: Why does it matter / what happens if we do nothing?
+      description: Time saved, revenue, risk removed, regulation met, deadline consequences.
+    validations:
+      required: true
+
+  - type: textarea
+    id: affected
+    attributes:
+      label: Who is affected?
+      description: Roles or groups and approximate numbers.
+
+  - type: textarea
+    id: current
+    attributes:
+      label: How is it handled today?
+      description: Current steps, workarounds, spreadsheets, manual work. Screenshots welcome.
+
+  - type: input
+    id: success
+    attributes:
+      label: How will we know it worked?
+      description: Something observable after release, e.g. "re-keying time drops from ~20 h/month to under 2 h".
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      options:
+        - New capability
+        - Change to existing behaviour
+        - Fix
+        - Compliance / regulatory
+    validations:
+      required: true
+
+  - type: dropdown
+    id: urgency
+    attributes:
+      label: Urgency
+      options:
+        - Hard deadline (state date and reason below)
+        - Soft target date (state below)
+        - No fixed date
+    validations:
+      required: true
+
+  - type: input
+    id: deadline
+    attributes:
+      label: Date and reason (if any)
+
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints
+      description: Regulatory, contractual, systems that must or must not be touched, budget, security or privacy requirements.
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Do you have a solution in mind? (optional, non-binding)
+      description: Recorded for context; the team will evaluate it alongside alternatives.
+
+  - type: textarea
+    id: unknowns
+    attributes:
+      label: Anything you already know is unclear?
+      description: These become the first entries in the open-questions register.
