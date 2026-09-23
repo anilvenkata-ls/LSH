@@ -1,0 +1,72 @@
+name: PR gates
+
+# Enforces the lifecycle hygiene rules on every pull request and runs the
+# unit test suite. Reference: docs/framework/04-git-and-pr-workflow.md
+#
+# Branch protection should require both jobs plus the "Cursor Bugbot" check.
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  pr-hygiene:
+    name: PR hygiene (REQ link, plan approved, docs, TODO/ASSUMED)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run gate checks
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+          PR_BASE: origin/${{ github.event.pull_request.base.ref }}
+        run: |
+          git fetch origin "${{ github.event.pull_request.base.ref }}" --depth=200
+          bash scripts/check-pr-gates.sh
+
+  unit-tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The project toolchain is not fixed yet. This step auto-detects common
+      # stacks so the gate works from day one; replace it with the real
+      # commands once the stack is chosen (and set the coverage threshold in
+      # the technical plan / test-plan.md).
+      - name: Detect stack and run tests
+        run: |
+          set -euo pipefail
+          if [[ -f package.json ]]; then
+            echo "Node project detected"
+            if [[ -f pnpm-lock.yaml ]]; then corepack enable && pnpm install --frozen-lockfile && pnpm test
+            elif [[ -f yarn.lock ]]; then corepack enable && yarn install --frozen-lockfile && yarn test
+            else npm ci && npm test; fi
+          elif [[ -f pyproject.toml || -f requirements.txt ]]; then
+            echo "Python project detected"
+            python3 -m pip install --upgrade pip
+            [[ -f requirements.txt ]] && pip install -r requirements.txt
+            [[ -f requirements-dev.txt ]] && pip install -r requirements-dev.txt
+            pip install pytest pytest-cov
+            pytest --cov --cov-report=term-missing
+          elif [[ -f go.mod ]]; then
+            echo "Go project detected"
+            go test ./... -cover
+          elif ls *.csproj *.sln 2>/dev/null | grep -q .; then
+            echo ".NET project detected"
+            dotnet test --collect:"XPlat Code Coverage"
+          elif [[ -f pom.xml ]]; then
+            echo "Maven project detected"; mvn -B test
+          elif [[ -f build.gradle || -f build.gradle.kts ]]; then
+            echo "Gradle project detected"; ./gradlew test
+          else
+            echo "No recognised toolchain yet — nothing to test. Update this job when the stack is chosen."
+          fi

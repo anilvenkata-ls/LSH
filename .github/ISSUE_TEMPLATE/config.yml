@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: How the development process works
+    url: https://github.com/anilvenkata-ls/LSH/blob/main/docs/framework/00-overview.md
+    about: Stages, gates, roles, and where documents live.
