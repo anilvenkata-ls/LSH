@@ -1,0 +1,32 @@
+---
+description: Standards for writing and updating lifecycle documents (intake, PRD, plans, feature docs, ADRs) under docs/
+globs: docs/**
+alwaysApply: false
+---
+
+# Documentation rule
+
+Full guidance: `docs/framework/10-documentation.md`.
+
+- New artifacts start from the matching file in `docs/templates/`. Keep the
+  header table, section numbering, and gate checklist intact.
+- Feature artifacts live in `docs/features/REQ-<id>-<slug>/` with the fixed
+  filenames `intake.md`, `open-questions.md`, `prd.md`, `technical-plan.md`,
+  `test-plan.md`, `feature-doc.md`, `release-checklist.md`.
+- IDs are stable once assigned: never renumber `FR-`, `AC-`, `NFR-`, `OQ-`.
+  Mark removed items `Withdrawn` rather than deleting them.
+- Requirements use *must* / *must not* / *may*; no *should*, *could*, or
+  vague quantifiers (*fast*, *many*, *soon*) — give a number or a bound.
+- One requirement per row; no "and/or" inside a requirement.
+- Approved documents contain no `TBD`; unresolved items are `OQ-n`
+  references. Anything you interpreted is marked `[ASSUMED: …]` with a
+  matching `OQ`.
+- When you change an approved document, bump its version and add a change
+  log row. Say whether the change requires a gate to be re-passed.
+- ADRs: `docs/adr/NNNN-kebab-title.md`, sequential four-digit number, from
+  `docs/templates/adr.md`. Create one only when a decision has multiple
+  viable options and affects more than the current feature; otherwise put the
+  decision in `feature-doc.md` §9.
+- Write for the reader six months from now: prefer plain sentences, tables
+  for structured facts, and links to the exact file/section over prose
+  descriptions of where things are.

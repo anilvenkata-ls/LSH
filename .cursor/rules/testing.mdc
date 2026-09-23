@@ -1,0 +1,43 @@
+---
+description: Unit test standards (AC-based naming, AAA, determinism, unhappy paths, no assumption-encoding) applied while writing or editing tests
+globs: tests/**, test/**, __tests__/**, spec/**, *.test.*, *.spec.*, *_test.go, test_*.py, *_test.py
+alwaysApply: false
+---
+
+# Testing rule
+
+Full guidance: `docs/framework/07-unit-testing.md`.
+
+## Derive from acceptance criteria
+
+- Start from `prd.md` §11 (ACs) and `technical-plan.md` §7 (test strategy),
+  not from the implementation. Expected values come from the AC text.
+- Test names carry the AC ID: `test_ac3_rejects_more_than_10000_rows`,
+  `it("AC-3: rejects more than 10,000 rows")`.
+- After adding tests, update `test-plan.md` §1 so every AC has a row.
+
+## Structure
+
+- Arrange / Act / Assert; one behaviour per test.
+- Cover unhappy paths for each unit: empty input, boundaries, invalid input,
+  downstream failure, permission denied, duplicate submission.
+- At least one test per external dependency simulating its failure.
+
+## Determinism and speed
+
+- No real clock, network, randomness, or filesystem without an injected fake.
+- Unit suite should run in under a minute; move slow tests to
+  `tests/integration/`.
+- Never "fix" a flaky test by retrying; fix or delete it.
+
+## Assumptions
+
+- If you are unsure of an expected value, do not invent it. Add an
+  `OQ-n` (Assumption) to `open-questions.md` and mark the test
+  `skip` with the `OQ` reference until it is Accepted.
+- Skipped / xfail tests must reference an `OQ-n` or issue.
+
+## Fixtures
+
+- Fixture files start with a short comment: what scenario they represent
+  and where the data came from. List them in `test-plan.md` §4.

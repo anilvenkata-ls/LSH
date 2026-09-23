@@ -1,0 +1,54 @@
+---
+description: Development lifecycle gates, artifact locations, assumption discipline, and commit format for this repository
+alwaysApply: true
+---
+
+# Lifecycle workflow rule
+
+This repo follows the gated lifecycle in `docs/framework/00-overview.md`:
+intake (G0) → PRD approved (G1) → plan approved (G2) → code complete (G3) →
+tests green (G4) → ready to deploy (G5).
+
+## Before acting, locate the feature
+
+- Identify the `REQ-<id>` from the branch name, PR title, open files, or the
+  user's message. Its artifacts are in `docs/features/REQ-<id>-<slug>/`.
+- Read `prd.md` status and `technical-plan.md` status before generating code.
+  If the plan is not `Approved`, do not write production code; explain the
+  unmet gate and offer `/tech-plan` or `/clarify`.
+
+## Assumption discipline
+
+- Never resolve an ambiguity by silently choosing. Write
+  `[ASSUMED: …]` at the point of use and add an `OQ-n` entry to
+  `open-questions.md` (type Assumption, severity, options, recommendation,
+  owner).
+- Do not write a test whose expected value depends on an assumption that is
+  not `Accepted` in the register.
+- Prefer asking one batched set of questions over many single questions.
+
+## IDs and traceability
+
+- Reference `REQ-`, `FR-`, `AC-`, `NFR-`, `OQ-` IDs in plans, comments, test
+  names, commit messages and PR text.
+- When implementing, name the plan step you are executing and tick it in
+  `technical-plan.md` §6 when done.
+
+## Commits
+
+- One logical change per commit. Format:
+  `REQ-<id>: <imperative summary>` (≤ 72 chars), body lists FR/AC/OQ touched.
+- Never amend or force-push unless explicitly told to.
+
+## Templates
+
+- New artifacts always start from `docs/templates/`. Keep section headings
+  and IDs intact so tooling and reviewers can find them.
+- Approved documents contain no `TBD`; use `OQ-n` references instead.
+
+## Output style
+
+- Explain *why* before showing code when the reason is not obvious from the
+  plan.
+- Keep diffs to the requested step. Mention, but do not make, unrelated
+  improvements you notice.

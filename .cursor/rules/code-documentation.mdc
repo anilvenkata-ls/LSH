@@ -1,0 +1,55 @@
+---
+description: Code documentation standards (module headers, doc comments, why-comments, TODO policy) applied while writing or editing source code
+globs: src/**, lib/**, app/**, pkg/**, cmd/**, internal/**, services/**, packages/**, *.py, *.ts, *.tsx, *.js, *.jsx, *.go, *.java, *.kt, *.cs, *.rb, *.rs, *.php, *.scala, *.swift
+alwaysApply: false
+---
+
+# Code documentation rule
+
+Full standard: `docs/framework/10-documentation.md` → "Code-level
+documentation standards". Adjust the `globs` above to the project's real
+source layout once the stack is fixed.
+
+## Module / file header
+
+Every new public module or file begins with a short header comment in the
+language's idiom:
+
+- One line: what this module is responsible for.
+- `REQ-<id>` that introduced it (and later ones that materially changed it).
+- Path to the feature doc: `docs/features/REQ-<id>-<slug>/feature-doc.md`.
+
+## Public API doc comments
+
+Every exported / public function, class, method, type, and constant gets a
+doc comment covering: purpose, parameters (with units and valid ranges),
+return value, errors/exceptions raised, and any non-obvious behaviour
+(ordering, idempotency, side effects, performance characteristics). Include a
+short example when the calling convention is not obvious.
+
+Private helpers need a doc comment only when the name does not fully say
+what they do.
+
+## Comments
+
+- Explain **why**: business rules (`per FR-3`), workarounds (`ledger API
+  rejects batches > 500 — OQ-7`), ordering constraints, performance choices.
+- Do not narrate what the code does (`// loop over items`, `// return
+  result`). Do not describe the change you are making.
+- `TODO` / `FIXME` / `HACK` must carry a reference: `TODO(OQ-12): …` or
+  `TODO(#345): …`. Bare ones are rejected by Bugbot and CI.
+
+## Configuration, flags, environment variables
+
+Where a config key / flag / env var is read, add a one-line comment with its
+purpose and default, and make sure it is listed in `feature-doc.md` §5.
+
+## Dependencies
+
+A new third-party dependency requires a why-sentence in `feature-doc.md` §8
+and a line in `technical-plan.md` §3.
+
+## Logging
+
+Log lines at boundaries include a stable feature identifier (the `REQ-` ID
+or feature tag) so production issues trace back to the requirement.
