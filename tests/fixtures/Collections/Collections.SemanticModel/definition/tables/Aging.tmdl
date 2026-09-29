@@ -1,0 +1,14 @@
+table Aging
+
+	column aging_bucket
+		dataType: string
+		sourceColumn: aging_bucket
+
+	partition Aging = m
+		mode: import
+		source =
+				let
+				    Source = Value.NativeQuery(AmazonRedshift.Database("rcm.abc123.us-east-1.redshift.amazonaws.com:5439", "rcm"), "SELECT a.aging_bucket, EXTRACT(YEAR FROM a.as_of_date) AS yr#(lf)FROM rcm.ar_aging a#(lf)JOIN rcm.""Payer Map"" p ON p.payer_id = a.payer_id", null, [EnableFolding=true])
+				in
+				    Source
+

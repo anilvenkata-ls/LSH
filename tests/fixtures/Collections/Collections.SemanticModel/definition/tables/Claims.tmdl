@@ -1,0 +1,19 @@
+table Claims
+
+	column claim_id
+		dataType: int64
+		sourceColumn: claim_id
+
+	column balance
+		dataType: decimal
+		sourceColumn: balance
+
+	partition Claims = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("sqlprod01", "RCM"),
+				    dbo_Claims = Source{[Schema="dbo",Item="Claims"]}[Data]
+				in
+				    dbo_Claims
+
