@@ -1,0 +1,16 @@
+table Payers
+
+	column payer_id
+		dataType: int64
+		sourceColumn: payer_id
+
+	partition Payers = m
+		mode: import
+		source =
+				let
+				    Source = AmazonRedshift.Database("rcm.abc123.us-east-1.redshift.amazonaws.com:5439", "rcm"),
+				    public = Source{[Name="public"]}[Data],
+				    payers1 = public{[Name="payers"]}[Data]
+				in
+				    payers1
+
