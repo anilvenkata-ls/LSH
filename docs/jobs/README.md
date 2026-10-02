@@ -53,8 +53,8 @@ salvage — is documented in [pipeline-contracts.md](pipeline-contracts.md).
 
 ## What a run looks like
 
-A successful run against the bundled catalog, which is also what the tests
-assert:
+A successful run against the bundled catalog. The summaries are abbreviated
+here; the real run report prints the full line each job returns:
 
 ```
  1. request_intake         completed  parsed 'Patient Financial Class' for report 'AR Aging Report'
@@ -90,8 +90,8 @@ When an artifact looks wrong, fix the job in the *owns* column, not the writer.
 | `Validation_Report.pdf` | 5 (rendered from the markdown) | 10 |
 | `Generated_SQL.sql` | 4 (assembled by `deployment_script`) | 10 |
 | `Rollback_Script.sql` | 4 (`change_set.rollback_sql`) | 10 |
-| `Unit_Tests.sql` | 6 (suite) + 6 (results as comments) | 10 |
-| `Integration_Tests.sql` | 7 (suite) + 7 (results as comments) | 10 |
+| `Unit_Tests.sql` | 6 (the suite, annotated with its results) | 10 |
+| `Integration_Tests.sql` | 7 (the suite, annotated with its results) | 10 |
 | `Impact_Analysis.xlsx` | 3, 7, 8 (one sheet each, plus tests) | 10 |
 | `Impact_Analysis.csv` | 3 (the impact matrix) | 10 |
 | `PowerBI_Change_Plan.md` | 8 (`context.power_bi`) | 10 |
