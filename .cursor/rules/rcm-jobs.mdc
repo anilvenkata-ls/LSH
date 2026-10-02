@@ -1,0 +1,54 @@
+---
+description: Keeps the RCM job documentation accurate when pipeline code changes
+globs: src/rcm_change_platform/**
+alwaysApply: false
+---
+
+# Working on the RCM pipeline
+
+Read [`AGENTS.md`](../../AGENTS.md) before editing, and the page for the job you
+are touching in [`docs/jobs/`](../../docs/jobs/README.md). Those pages document
+the context contract, the halt conditions and the judgement calls; changing the
+code without reading them usually means re-deriving something that is already
+written down.
+
+## Documentation must follow the code in the same change
+
+| If you change | Update |
+| --- | --- |
+| a job's behaviour, halt conditions or warnings | `docs/jobs/<nn>-<name>.md` |
+| the `PIPELINE` tuple | `docs/jobs/README.md` and the job table in `AGENTS.md` |
+| a `ChangeContext` field or a `models.py` artifact | `docs/jobs/pipeline-contracts.md` |
+| which artifacts are written | the artifact tables in `docs/jobs/README.md` and `10-final-output.md` |
+| a `RunOptions` field or a CLI flag | `docs/jobs/pipeline-contracts.md` and `README.md` |
+
+The job pages all follow the same seven-section shape: Purpose, Contract, How it
+works, Halt conditions, Warnings, Key functions, Tests and extension points.
+Keep that shape — it is what lets a reader jump straight to the section they
+need, and what lets an assistant load one page instead of the whole directory.
+
+## Rules the documentation records
+
+Do not break these without an explicit decision; they are requirements, not
+style preferences.
+
+- Jobs communicate only through `ChangeContext`. No job imports another job.
+- Zero runtime dependencies in `pyproject.toml`.
+- Deterministic without an LLM; every LLM call needs a working fallback.
+- Financial reconciliation drift is blocking, always.
+- Aggregate views are flagged for review, never edited automatically.
+- Halt rather than guess, and still produce `Requirement.md`.
+- Nothing is deployed: no Redshift connection, no Power BI publish, no PR.
+
+## Facts in documentation must be verified
+
+Counts, thresholds, filenames and messages in the docs are checked against real
+output. If you state one, confirm it first:
+
+```bash
+python -m pytest
+rcm-change run "Add Patient Financial Class to the AR Aging Report" -o /tmp/rcm
+```
+
+`/tmp/rcm/Change_Request/Run_Manifest.json` holds the whole run as structured
+data and is the quickest way to confirm a number.
