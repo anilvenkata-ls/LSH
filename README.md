@@ -20,7 +20,7 @@ rcm-change run "Add Patient Financial Class to the AR Aging Report" --reason "Ne
 ```
    1. request_intake           completed  parsed 'Patient Financial Class' for report 'AR Aging Report'
    2. metadata_discovery       completed  resolved to rcm.dim_patient.patient_financial_class VARCHAR(50)
-   3. impact_analysis          completed  10 impacted objects, 4 require code changes
+   3. impact_analysis          completed  11 impacted objects, 4 require code changes
    4. sql_change_generation    completed  generated migration for rcm.fact_ar.patient_financial_class
    5. documentation            completed  drafted 5 documents
    6. unit_test_generation     completed  8/8 unit tests passed
@@ -70,6 +70,10 @@ out/Change_Request/
 
 Agents share a `ChangeContext` and each one returns a typed artifact, so any agent can be swapped
 for a different implementation without touching the others.
+
+Each agent has a reference page in [`docs/jobs/`](docs/jobs/README.md) covering its context
+contract, algorithm, halt conditions and tests. If you are reading the code — or pointing an AI
+assistant at it — start with [`AGENTS.md`](AGENTS.md).
 
 ## How it decides what to change
 
@@ -201,3 +205,12 @@ tool. It does not connect to Redshift, publish to Power BI, or open pull request
 produces the artifacts a human reviews and a deployment job applies. `docs/PRODUCTION_INTEGRATION.md`
 covers what each of those integrations requires, and `docs/REQUIREMENTS_TRACEABILITY.md` maps the
 original requirement document to the implementation.
+
+## Documentation
+
+| Document | For |
+| --- | --- |
+| [`AGENTS.md`](AGENTS.md) | The entry point for developers and AI assistants: layout, invariants, where each change belongs |
+| [`docs/jobs/`](docs/jobs/README.md) | One reference page per pipeline job, plus the shared contracts |
+| [`docs/PRODUCTION_INTEGRATION.md`](docs/PRODUCTION_INTEGRATION.md) | Pointing the platform at a real environment |
+| [`docs/REQUIREMENTS_TRACEABILITY.md`](docs/REQUIREMENTS_TRACEABILITY.md) | Original requirement mapped to the implementation |

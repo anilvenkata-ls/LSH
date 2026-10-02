@@ -51,13 +51,16 @@ run render a `Requirement.md` containing the clarification question.
    - A quoted phrase anywhere in the original request wins over the regex
      capture for the column, because a user who quotes a phrase means it
      literally.
-4. **Score the confidence**: `0.9` from the LLM, `0.75` when the rules matched
-   and the request contained a quoted phrase, `0.6` for a plain regex match,
-   `0.5` when only a quoted phrase was found.
+4. **Score the parse**: `0.9` from the LLM, `0.75` when the rules matched and
+   the request contained a quoted phrase, `0.6` for a plain regex match, `0.5`
+   when only a quoted phrase was found.
 5. **Resolve the report** against the catalog with `repo.find_report`, which
    fuzzy-matches the phrase against each report's name and aliases with a
    threshold of `0.4`. On success the request's `report` is replaced by the
-   canonical catalog name, so every later job works with one spelling.
+   canonical catalog name, so every later job works with one spelling, and the
+   confidence is raised to the **larger of the parse score and the report match
+   score**. An exact report name therefore reports confidence `1.00` even
+   though the rule parser only scored its own work `0.75`.
 6. **Assign a request id** — `--request-id` if given, otherwise `CR-` plus the
    first eight hex characters of the SHA-1 of the raw request, uppercased. The
    same sentence therefore always produces the same id, which keeps artifacts
